@@ -1,37 +1,43 @@
+const asyncHandler = require('express-async-handler');
+
 // @desc Get protocols
 // @route GET /api/protocols
 // @access private
-const getProtocols = (req, res) => {
-    res.status(200).json({ messsage: 'Get Protocols'});
-}
+const getProtocols = asyncHandler(async (req, res) => {
+    res.status(200).json({ message: 'Get Protocols'});
+});
 
 // @desc Get protocol by id
 // @route GET /api/protocols/:id
 // @access private
-const getProtocolById = (req, res) => {
-    res.status(200).json({ messsage: `Get protocol of ${req.params.id}`});
-}
+const getProtocolById = asyncHandler(async (req, res) => {
+    res.status(200).json({ message: `Get protocol of ${req.params.id}`});
+});
 
 // @desc Set protocol
 // @route POST /api/protocols
 // @access private
-const setProtocol = (req, res) => {
-    res.status(200).json({ messsage: 'Set Protocol'});
-}
+const setProtocol = asyncHandler(async (req, res) => {
+    if (!req.body.text) {
+        res.status(400);
+        throw new Error('Please enter a text field');
+    }
+    res.status(200).json({ message: 'Set Protocol'});
+});
 
 // @desc Update protocol
 // @route PUT /api/protocols/:id
 // @access private
-const updateProtocol = (req, res) => {
-    res.status(200).json({ messsage: `Update protocol of ${req.params.id}`});
-}
+const updateProtocol = asyncHandler(async (req, res) => {
+    res.status(200).json({ message: `Update protocol of ${req.params.id}`});
+});
 
 // @desc Delete protocol
 // @route DELETE /api/protocols/:id
 // @access private
-const deleteProtocol = (req, res) => {
-    res.status(200).json({ messsage: `Delete protocol of ${req.params.id}`});
-}
+const deleteProtocol = asyncHandler(async (req, res) => {
+    res.status(200).json({ message: `Delete protocol of ${req.params.id}`});
+});
 
 module.exports = {
     getProtocols,
