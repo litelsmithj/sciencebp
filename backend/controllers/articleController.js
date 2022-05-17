@@ -1,9 +1,10 @@
 const asyncHandler = require('express-async-handler');
 const Article = require('../models/articleModel');
+const User = require('../models/userModel');
 
 // @desc Get articles
 // @route GET /api/articles
-// @access private
+// @access public
 const getArticles = asyncHandler(async(req, res) => {
     const articles = await Article.find();
     res.status(200).json(articles);
@@ -11,7 +12,7 @@ const getArticles = asyncHandler(async(req, res) => {
 
 // @desc Get article by id
 // @route GET /api/articles/:id
-// @access private
+// @access public
 const getArticleById = asyncHandler(async(req, res) => {
     const article = await Article.findById(req.params.id);
 
@@ -33,7 +34,8 @@ const setArticle = asyncHandler(async(req, res) => {
     }
 
     const article = await Article.create({
-        title: req.body.title
+        title: req.body.title,
+        user: req.user.id
     });
 
     res.status(200).json(article);
@@ -48,6 +50,18 @@ const updateArticle = asyncHandler(async(req, res) => {
     if (!article) {
         res.status(400);
         throw new Error("Article not found");
+    }
+
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+        res.status(401);
+        throw new Error("User not found");
+    }
+
+    if (article.user.toString() !== user.id) {
+        res.status(401);
+        throw new Error("User not authorized");
     }
 
     const updatedArticle = await Article.findByIdAndUpdate(req.params.id, req.body, {
@@ -66,6 +80,18 @@ const deleteArticle = asyncHandler(async(req, res) => {
     if (!article) {
         res.status(400);
         throw new Error("Article not found");
+    }
+
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+        res.status(401);
+        throw new Error("User not found");
+    }
+
+    if (article.user.toString() !== user.id) {
+        res.status(401);
+        throw new Error("User not authorized");
     }
 
     await article.deleteOne();
