@@ -54,14 +54,12 @@ const updateProtocol = asyncHandler(async (req, res) => {
         throw new Error ('Protocol not found');
     }
 
-    const user = await User.findById(req.user.id);
-
-    if (!user) {
+    if (!req.user) {
         res.status(401);
         throw new Error("User not found");
     }
 
-    if (protocol.user.toString() !== user.id){
+    if (protocol.user.toString() !== req.user.id){
         res.status(401);
         throw new Error("User not authorized");
     }
@@ -84,14 +82,12 @@ const deleteProtocol = asyncHandler(async (req, res) => {
         throw new Error ('Protocol not found');
     };
 
-    const user = await User.findById(req.user.id);
-
-    if (!user) {
+    if (!req.user) {
         res.status(401);
         throw new Error("User not found");
     }
 
-    if (protocol.user.toString() !== user.id) {
+    if (protocol.user.toString() !== req.user.id) {
         res.status(401);
         throw new Error("User not authorized");
     }

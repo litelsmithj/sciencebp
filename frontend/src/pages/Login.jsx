@@ -61,7 +61,7 @@ function Login() {
         <h1>
           <FaSignInAlt /> Login
         </h1>
-        <p>Login and view protocols</p>
+        <p>Login to create protocols</p>
       </section>
 
       <section className="form">
