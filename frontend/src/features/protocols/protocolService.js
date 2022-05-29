@@ -19,6 +19,23 @@ const getProtocols = async () => {
     return response.data;
 };
 
+const getProtocolById = async (protocolId) => {
+    const response = await axios.get(API_URL+protocolId);
+    return response.data;
+};
+
+const updateProtocol = async (protocolData, token) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+
+    const response = await axios.put(API_URL+protocolData._id, protocolData, config);
+
+    return response.data;
+}
+
 const deleteProtocol = async (protocolId, token) => {
     const config = {
         headers: {
@@ -33,7 +50,9 @@ const deleteProtocol = async (protocolId, token) => {
 
 const protocolService = {
     getProtocols,
+    getProtocolById,
     createProtocol,
+    updateProtocol,
     deleteProtocol
 };
 

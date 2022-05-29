@@ -23,7 +23,7 @@ const getProtocolById = asyncHandler(async (req, res) => {
         throw new Error("Protocol not found");
     }
 
-    res.status(200).json(protocol.select('-user'));
+    res.status(200).json(protocol); //Remove user from return?
 });
 
 // @desc Set protocol
@@ -37,7 +37,8 @@ const setProtocol = asyncHandler(async (req, res) => {
 
     const protocol = await Protocol.create({
         name: req.body.name,
-        user: req.user.id
+        user: req.user.id,
+        description: (req.body.description? req.body.description : undefined)
     });
 
     res.status(200).json(protocol);
