@@ -12,15 +12,19 @@ function Dashboard() {
   const dispatch = useDispatch();
 
   const {user} = useSelector((state) => state.auth);
-  const { protocols, isLoading, isError, message } = useSelector(
+  const { protocols, protocolsLoading, protocolsError, protocolsMessage } = useSelector(
     (state) => state.protocols
   );
-  const {articles} = useSelector((state) => state.articles);
+  
+  const {articles, articlesLoading, articlesError, articlesMessage} = useSelector((state) => state.articles);
 
   useEffect(()=> {
-    if (isError){
-      console.log(message);
+    if (protocolsError){
+      console.log(protocolsMessage);
     }
+    if (articlesError) {
+       console.log(articlesMessage);
+     }
 
     dispatch(getProtocols());
     dispatch(getArticles());
@@ -30,9 +34,9 @@ function Dashboard() {
       dispatch(resetArticles());
     }
 
-  }, [user, dispatch, isError, message]);
+  }, [user, dispatch, protocolsError, protocolsMessage, articlesError, articlesMessage]);
 
-  if (isLoading) {
+  if (protocolsLoading || articlesLoading) {
     return <Spinner/>
   }
 

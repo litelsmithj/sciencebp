@@ -3,10 +3,10 @@ import protocolService from './protocolService';
 
 const initialState = {
     protocols: [],
-    isLoading: false,
-    isError: false,
-    isSuccess: false,
-    message: ''
+    protocolsLoading: false,
+    protocolsError: false,
+    protocolsSuccess: false,
+    protocolsMessage: ''
 }
 
 export const getProtocols = createAsyncThunk('protocols/getAll', async (_, thunkAPI) => {
@@ -66,70 +66,70 @@ export const protocolSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(getProtocols.pending, (state) => {
-                state.isLoading = true;
+                state.protocolsLoading = true;
             })
             .addCase(getProtocols.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.isSuccess = true;
+                state.protocolsLoading = false;
+                state.protocolsSuccess = true;
                 state.protocols = action.payload;
             })
             .addCase(getProtocols.rejected, (state, action) => {
-                state.isLoading = false;
-                state.isError = true;
-                state.message = action.payload;
+                state.protocolsLoading = false;
+                state.protocolsError = true;
+                state.protocolsMessage = action.payload;
             })
              .addCase(getProtocolById.pending, (state) => {
-                state.isLoading = true;
+                state.protocolsLoading = true;
             })
             .addCase(getProtocolById.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.isSuccess = true;
+                state.protocolsLoading = false;
+                state.protocolsSuccess = true;
                 state.protocols = action.payload;
             })
             .addCase(getProtocolById.rejected, (state, action) => {
-                state.isLoading = false;
-                state.isError = true;
+                state.protocolsLoading = false;
+                state.protocolsError = true;
                 state.message = action.payload;
             })
             .addCase(createProtocol.pending, (state) => {
-                state.isLoading = true;
+                state.protocolsLoading = true;
             })
             .addCase(createProtocol.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.isSuccess = true;
+                state.protocolsLoading = false;
+                state.protocolsSuccess = true;
                 state.protocols.push(action.payload);
             })
             .addCase(createProtocol.rejected, (state, action) => {
-                state.isLoading = false;
-                state.isError = true;
-                state.message = action.payload;
+                state.protocolsLoading = false;
+                state.protocolsError = true;
+                state.protocolsMessage = action.payload;
             })
             .addCase(updateProtocol.pending, (state) => {
-                state.isLoading = true;
+                state.protocolsLoading = true;
             })
             .addCase(updateProtocol.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.isSuccess = true;
+                state.protocolsLoading = false;
+                state.protocolsSuccess = true;
                 state.protocols = action.payload;
             })
             .addCase(updateProtocol.rejected, (state, action) => {
-                state.isLoading = false;
-                state.isError = true;
+                state.protocolsLoading = false;
+                state.protocolsError = true;
                 state.message = action.payload;
             })
             .addCase(deleteProtocol.pending, (state) => {
-                state.isLoading = false;
-                state.isSuccess = true;
-                state.isLoading = true;
+                state.protocolsLoading = false;
+                state.protocolsSuccess = true;
+                state.protocolsLoading = true;
             })
             .addCase(deleteProtocol.fulfilled, (state, action) => {
                 state.protocols = state.protocols.filter(
                     (protocol) => protocol._id !== action.payload.id);
             })
             .addCase(deleteProtocol.rejected, (state, action) => {
-                state.isLoading = false;
-                state.isError = true;
-                state.message = action.payload;
+                state.protocolsLoading = false;
+                state.protocolsError = true;
+                state.protocolsMessage = action.payload;
             })
     }
 });

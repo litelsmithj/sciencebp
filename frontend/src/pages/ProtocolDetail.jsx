@@ -15,13 +15,13 @@ function ProtocolDetail() {
     const navigate = useNavigate();
 
     const {user} = useSelector(state=> state.auth);
-    const { protocols, isError, isLoading, message } = useSelector(
+    const { protocols, protocolsError, protocolsLoading, protocolsMessage } = useSelector(
       (state) => state.protocols
     );
     
     useEffect(()=>{
-        if (isError) {
-            console.log(message);
+        if (protocolsError) {
+            console.log(protocolsMessage);
         }
 
         dispatch(getProtocolById(protocolId));
@@ -29,14 +29,14 @@ function ProtocolDetail() {
         return () => {
             dispatch(resetProtocols());
         }
-    }, [isError, message, dispatch, protocolId]);
+    }, [protocolsError, protocolsMessage, dispatch, protocolId]);
 
     const deleteButtonClick = () => {
         dispatch(deleteProtocol(protocolId));
         navigate('/');
     };
 
-    if (isLoading) {
+    if (protocolsLoading) {
         return <Spinner/>
     }
 

@@ -58,7 +58,7 @@ const updateArticle = asyncHandler(async(req, res) => {
         throw new Error("User not found");
     }
 
-    if (article.user.toString() !== req.user.id) {
+    if (article.author.toString() !== req.user.id) {
         res.status(401);
         throw new Error("User not authorized");
     }

@@ -1,5 +1,5 @@
 import React from 'react'
-// import {deleteArticle} from '../../features/articles/articleSlice';
+import {deleteArticle} from '../../features/articles/articleSlice';
 import {useDispatch} from 'react-redux';
 import {Link} from 'react-router-dom';
 
@@ -12,7 +12,7 @@ function ArticleItem({article, user}) {
                 <div>{new Date(article.createdAt).toLocaleDateString("en-US")}</div>
                 <h2>{article.title}</h2>
             </Link>
-            {/* {user? (
+            {user && user._id === article.author ? (
                 <button
                 onClick={() => dispatch(deleteArticle(article._id))}
                 className="close"
@@ -21,7 +21,7 @@ function ArticleItem({article, user}) {
                 </button>
             ) : (
                 <></>
-            )} */}
+            )}
         </div>
     );
 }

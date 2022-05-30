@@ -3,11 +3,11 @@ import {useEffect} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import {
   getArticleById,
-  // deleteArticle,
+  deleteArticle,
   resetArticles,
 } from "../features/articles/articleSlice";
 import Spinner from '../components/Spinner';
-// import articleUpdateForm from '../components/articles/articleUpdateForm';
+import ArticleUpdateForm from '../components/articles/ArticleUpdateForm';
 
 function ArticleDetail() {
     const {articleId} = useParams();
@@ -15,13 +15,13 @@ function ArticleDetail() {
     const navigate = useNavigate();
 
     const {user} = useSelector(state=> state.auth);
-    const { articles, isError, isLoading, message } = useSelector(
+    const { articles, articlesError, articlesLoading, articlesMessage } = useSelector(
       (state) => state.articles
     );
     
     useEffect(()=>{
-        if (isError) {
-            console.log(message);
+        if (articlesError) {
+            console.log(articlesMessage);
         }
 
         dispatch(getArticleById(articleId));
@@ -29,14 +29,14 @@ function ArticleDetail() {
         return () => {
             dispatch(resetArticles());
         }
-    }, [isError, message, dispatch, articleId]);
+    }, [articlesError, articlesMessage, dispatch, articleId]);
 
     const deleteButtonClick = () => {
-        // dispatch(deleteArticle(articleId));
+        dispatch(deleteArticle(articleId));
         navigate('/');
     };
 
-    if (isLoading) {
+    if (articlesLoading) {
         return <Spinner/>
     }
 
@@ -52,9 +52,9 @@ function ArticleDetail() {
         {body ? <div>{body}</div> : <p>No body</p>}
         <br />
 
-        {user && user._id === article.user ? (
+        {user && user._id === article.author ? (
           <>
-            {/* <articleUpdateForm /> */}
+            <ArticleUpdateForm />
 
             <br/>
 

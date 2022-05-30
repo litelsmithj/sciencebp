@@ -27,7 +27,6 @@ function Login() {
     }
 
     if (isSuccess || user) {
-      console.log(isSuccess);
       navigate("/");
     }
 

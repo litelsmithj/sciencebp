@@ -3,10 +3,10 @@ import articleService from './articleService';
 
 const initialState = {
     articles: [],
-    isLoading: false,
-    isError: false,
-    isSuccess: false,
-    message: ''
+    articlesLoading: false,
+    articlesError: false,
+    articlesSuccess: false,
+    articlesMessage: ''
 }
 
 export const getArticles = createAsyncThunk('articles/getAll', async (_, thunkAPI)=> {
@@ -18,7 +18,7 @@ export const getArticles = createAsyncThunk('articles/getAll', async (_, thunkAP
     }
 });
 
-export const getArticleById = createAsyncThunk('article/delete', async (articleId, thunkAPI)=> {
+export const getArticleById = createAsyncThunk('article/getOne', async (articleId, thunkAPI)=> {
     try {
         return await articleService.getArticleById(articleId);
     } catch (error) {
@@ -31,6 +31,16 @@ export const createArticle = createAsyncThunk('article/create', async (articleDa
     try {
         const token = thunkAPI.getState().auth.user.token;
         return await articleService.createArticle(articleData, token);
+    } catch (error) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+export const updateArticle = createAsyncThunk('article/update', async (articleData, thunkAPI)=> {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await articleService.updateArticle(articleData, token);
     } catch (error) {
         const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
         return thunkAPI.rejectWithValue(message);
@@ -56,55 +66,70 @@ export const articleSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(getArticles.pending, (state) => {
-                state.isLoading = true;
+                state.articlesLoading = true;
             })
             .addCase(getArticles.fulfilled, (state, action) => {
+                state.articlesLoading = false;
+                state.articlesSuccess = true;
                 state.articles = action.payload;
             })
             .addCase(getArticles.rejected, (state, action) => {
-                state.isLoading = false;
-                state.isError = true;
-                state.message = action.payload;
+                state.articlesLoading = false;
+                state.articlesError = true;
+                state.articlesMessage = action.payload;
             })
             .addCase(getArticleById.pending, (state) => {
-                state.isLoading = true;
+                state.articlesLoading = true;
             })
             .addCase(getArticleById.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.isSuccess = true;
+                state.articlesLoading = false;
+                state.articlesSuccess = true;
                 state.articles = action.payload;
             })
             .addCase(getArticleById.rejected, (state, action) => {
-                state.isLoading = false;
-                state.isError = true;
-                state.message = action.payload;
+                state.articlesLoading = false;
+                state.articlesError = true;
+                state.articlesMessage = action.payload;
             })
             .addCase(createArticle.pending, (state) => {
-                state.isLoading = true;
+                state.articlesLoading = true;
             })
             .addCase(createArticle.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.isSuccess = true;
+                state.articlesLoading = false;
+                state.articlesSuccess = true;
                 state.articles.push(action.payload);
             })
             .addCase(createArticle.rejected, (state, action) => {
-                state.isLoading = false;
-                state.isError = true;
+                state.articlesLoading = false;
+                state.articlesError = true;
+                state.articlesMessage = action.payload;
+            })
+            .addCase(updateArticle.pending, (state) => {
+                state.articlesLoading = true;
+            })
+            .addCase(updateArticle.fulfilled, (state, action) => {
+                state.articlesLoading = false;
+                state.articlesSuccess = true;
+                state.articles = action.payload;
+            })
+            .addCase(updateArticle.rejected, (state, action) => {
+                state.articlesLoading = false;
+                state.articlesError = true;
                 state.message = action.payload;
             })
-            // .addCase(deleteArticle.pending, (state) => {
-            //     state.isLoading = true;
-            // })
-            // .addCase(deleteArticle.fulfilled, (state, action) => {
-            //     state.isLoading = false;
-            //     state.isSuccess = true;
-            //     state.articles = state.articles.filter((article) => article._id !== action.payload.id);
-            // })
-            // .addCase(deleteArticle.rejected, (state, action) => {
-            //     state.isLoading = false;
-            //     state.isError = true;
-            //     state.message = action.payload;
-            // })
+            .addCase(deleteArticle.pending, (state) => {
+                state.articlesLoading = true;
+            })
+            .addCase(deleteArticle.fulfilled, (state, action) => {
+                state.articlesLoading = false;
+                state.articlesSuccess = true;
+                state.articles = state.articles.filter((article) => article._id !== action.payload.id);
+            })
+            .addCase(deleteArticle.rejected, (state, action) => {
+                state.articlesLoading = false;
+                state.articlesError = true;
+                state.articlesMessage = action.payload;
+            })
     }
 });
 
