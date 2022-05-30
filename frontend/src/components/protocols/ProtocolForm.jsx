@@ -1,24 +1,20 @@
 import {useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {updateProtocol} from '../features/protocols/protocolSlice';
+import {useDispatch} from 'react-redux';
+import {createProtocol} from '../../features/protocols/protocolSlice';
 
-function ProtocolUpdateForm() {
-    let { _id, name, description } = useSelector(
-      (state) => state.protocols.protocols
-    );
-    
-    const [newName, setNewName] = useState(name);
-    const [newDescription, setNewDescription] = useState(description);
+function ProtocolForm() {
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState("");
 
     const dispatch = useDispatch();
 
     const onSubmit = (e)=> {
         e.preventDefault();
 
-        dispatch(updateProtocol({_id, name: newName, description: newDescription}));
+        dispatch(createProtocol({name, description}));
 
-        setNewName(newName);
-        setNewDescription(newDescription);
+        setName('');
+        setDescription('');
     };
 
     return (
@@ -30,8 +26,8 @@ function ProtocolUpdateForm() {
               type="text"
               id="name"
               name="name"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
           <div className="form-group">
@@ -40,13 +36,13 @@ function ProtocolUpdateForm() {
               type="text"
               id="description"
               name="description"
-              value={newDescription}
-              onChange={(e) => setNewDescription(e.target.value)}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
             />
           </div>
           <div className="form-group">
             <button className="btn btn-block" type="submit">
-              Edit Protocol
+              Add Protocol
             </button>
           </div>
         </form>
@@ -54,4 +50,4 @@ function ProtocolUpdateForm() {
     );
 }
 
-export default ProtocolUpdateForm
+export default ProtocolForm

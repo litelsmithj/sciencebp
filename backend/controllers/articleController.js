@@ -35,7 +35,8 @@ const setArticle = asyncHandler(async(req, res) => {
 
     const article = await Article.create({
         title: req.body.title,
-        user: req.user.id
+        body: req.body.body,
+        author: req.user.id,
     });
 
     res.status(200).json(article);
@@ -79,20 +80,20 @@ const deleteArticle = asyncHandler(async(req, res) => {
         res.status(400);
         throw new Error("Article not found");
     }
-
+    
     if (!req.user) {
         res.status(401);
         throw new Error("User not found");
     }
 
-    if (article.user.toString() !== req.user.id) {
+    if (article.author.toString() !== req.user.id) {
         res.status(401);
         throw new Error("User not authorized");
     }
 
     await article.deleteOne();
 
-    res.status(200).json({ messsage: `Delete article of ${req.params.id}`});
+    res.status(200).json({id: req.params.id});
 });
 
 module.exports = {

@@ -5,9 +5,9 @@ const user = JSON.parse(localStorage.getItem('user'));
 
 const initialState = {
     user: user ? user : null,
+    isLoading: false,
     isError: false,
     isSuccess: false,
-    isLoading: false,
     message: ''
 };
 
@@ -33,12 +33,7 @@ export const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        reset: (state) => {
-            state.isError = false;
-            state.isLoading = false;
-            state.isSuccess = false;
-            state.message = '';
-        }
+        reset: (state) => initialState
     },
     extraReducers: (builder) => {
         builder
@@ -78,7 +73,7 @@ export const authSlice = createSlice({
 
 export const logout = createAsyncThunk('auth/logout',
     async() => {
-        await authService.logout;
+        await authService.logout();
     }
 );
 export const {reset} = authSlice.actions;

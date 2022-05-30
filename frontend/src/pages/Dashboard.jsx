@@ -1,16 +1,21 @@
 import {useEffect} from 'react';
-import {useNavigate} from 'react-router-dom';
 import {useSelector, useDispatch} from 'react-redux';
-import ProtocolItem from '../components/ProtocolItem';
+import ProtocolItem from '../components/protocols/ProtocolItem';
+import ArticleItem from "../components/articles/ArticleItem";
 import Spinner from '../components/Spinner';
-import {getProtocols, reset} from '../features/protocols/protocolSlice';
-import ProtocolForm from '../components/ProtocolForm';
+import {getProtocols, resetProtocols} from '../features/protocols/protocolSlice';
+import {getArticles, resetArticles} from '../features/articles/articleSlice';
+import {reset} from '../features/ui/uiSlice';
+import ProtocolForm from '../components/protocols/ProtocolForm';
+import ArticleForm from '../components/articles/ArticleForm';
 
 function Dashboard() {
   const dispatch = useDispatch();
 
   const {user} = useSelector((state) => state.auth);
-  const {protocols, isLoading, isError, message} = useSelector((state) => state.protocols);
+  const {protocols} = useSelector((state) => state.protocols);
+  const {articles} = useSelector((state) => state.articles);
+  const {isLoading, isError, message}  = useSelector((state) => state.ui);
 
   useEffect(()=> {
     if (isError){
@@ -18,9 +23,12 @@ function Dashboard() {
     }
 
     dispatch(getProtocols());
+    dispatch(getArticles());
 
     return () => {
       dispatch(reset());
+      dispatch(resetProtocols());
+      dispatch(resetArticles());
     }
 
   }, [user, dispatch, isError, message]);
@@ -38,23 +46,53 @@ function Dashboard() {
 
       {user ? (
         <>
-          <ProtocolForm/>
+          <ProtocolForm />
         </>
-      ): (<></>)}
+      ) : (
+        <></>
+      )}
 
       <section className="content">
         {protocols.length > 0 ? (
           <div className="protocols">
-            {protocols.map((protocol)=> (
-              <ProtocolItem key = {protocol._id} protocol = {protocol} user = {user}/>
+            {protocols.map((protocol) => (
+              <ProtocolItem
+                key={protocol._id}
+                protocol={protocol}
+                user={user}
+              />
             ))}
           </div>
         ) : (
-          <></>
+          <>There are no protocols</>
+        )}
+      </section>
+      <br />
+      <section className="footer">
+        <p>Articles</p>
+      </section>
+
+      {user ? (
+        <>
+          <ArticleForm />
+        </>
+      ) : (
+        <></>
+      )}
+
+      <section className="content">
+        {articles.length > 0 ? (
+          <div className="articles">
+            {articles.map((article) => (
+              <ArticleItem key={article._id} article={article} user = {user} />
+            ))}
+          </div>
+        ) : (
+          <>There are no articles</>
         )}
       </section>
     </>
-  )
+  );
 }
 
 export default Dashboard

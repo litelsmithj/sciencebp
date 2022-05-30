@@ -1,9 +1,13 @@
 import {useParams, useNavigate} from 'react-router-dom';
 import {useEffect} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
-import {getProtocolById, deleteProtocol, updateProtocol, reset} from '../features/protocols/protocolSlice';
+import {
+  getProtocolById,
+  deleteProtocol,
+  resetProtocols,
+} from "../features/protocols/protocolSlice";
 import Spinner from '../components/Spinner';
-import ProtocolUpdateForm from '../components/ProtocolUpdateForm';
+import ProtocolUpdateForm from '../components/protocols/ProtocolUpdateForm';
 
 function ProtocolDetail() {
     const {protocolId} = useParams();
@@ -11,7 +15,8 @@ function ProtocolDetail() {
     const navigate = useNavigate();
 
     const {user} = useSelector(state=> state.auth);
-    const {protocols, isError, isLoading, message} = useSelector(state=> state.protocols);
+    const {protocols} = useSelector(state=> state.protocols);
+    const {isError, isLoading, message} = useSelector(state => state.ui);
     
     useEffect(()=>{
         if (isError) {
@@ -21,7 +26,7 @@ function ProtocolDetail() {
         dispatch(getProtocolById(protocolId));
 
         return () => {
-            dispatch(reset());
+            dispatch(resetProtocols());
         }
     }, [isError, message, dispatch, protocolId]);
 
