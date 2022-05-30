@@ -5,7 +5,6 @@ import ArticleItem from "../components/articles/ArticleItem";
 import Spinner from '../components/Spinner';
 import {getProtocols, resetProtocols} from '../features/protocols/protocolSlice';
 import {getArticles, resetArticles} from '../features/articles/articleSlice';
-import {reset} from '../features/ui/uiSlice';
 import ProtocolForm from '../components/protocols/ProtocolForm';
 import ArticleForm from '../components/articles/ArticleForm';
 
@@ -13,9 +12,10 @@ function Dashboard() {
   const dispatch = useDispatch();
 
   const {user} = useSelector((state) => state.auth);
-  const {protocols} = useSelector((state) => state.protocols);
+  const { protocols, isLoading, isError, message } = useSelector(
+    (state) => state.protocols
+  );
   const {articles} = useSelector((state) => state.articles);
-  const {isLoading, isError, message}  = useSelector((state) => state.ui);
 
   useEffect(()=> {
     if (isError){
@@ -26,7 +26,6 @@ function Dashboard() {
     dispatch(getArticles());
 
     return () => {
-      dispatch(reset());
       dispatch(resetProtocols());
       dispatch(resetArticles());
     }

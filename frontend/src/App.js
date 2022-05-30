@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import ProtocolDetail from './pages/ProtocolDetail';
+import ArticleDetail from './pages/ArticleDetail';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path = "/login" element={<Login/>}></Route>
             <Route path = "/register" element={<Register/>}></Route>
             <Route path = "/protocol/:protocolId" element = {<ProtocolDetail/>}></Route>
+            <Route path = "/article/:articleId" element = {<ArticleDetail/>}></Route>
           </Routes>
         </div>
       </Router>

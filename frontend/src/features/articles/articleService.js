@@ -7,6 +7,11 @@ const getArticles = async () => {
     return response.data;
 }
 
+const getArticleById = async (articleId) => {
+    const response = await axios.get(API_URL+articleId);
+    return response.data;
+}
+
 const createArticle = async (articleData, token) => {
     const config = {
         headers: {
@@ -19,20 +24,21 @@ const createArticle = async (articleData, token) => {
     return response.data;
 }
 
-const deleteArticle = async (protocolId, token) => {
+const deleteArticle = async (articleId, token) => {
     const config = {
         headers: {
             Authorization: `Bearer ${token}`
         }
     }
 
-    const response = await axios.delete(API_URL+protocolId, config);
+    const response = await axios.delete(API_URL+articleId, config);
 
     return response.data;
 }
 
 const articleService = {
     getArticles,
+    getArticleById,
     createArticle,
     deleteArticle,
     

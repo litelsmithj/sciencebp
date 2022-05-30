@@ -2,21 +2,21 @@ import {useParams, useNavigate} from 'react-router-dom';
 import {useEffect} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import {
-  getProtocolById,
-  deleteProtocol,
-  resetProtocols,
-} from "../features/protocols/protocolSlice";
+  getArticleById,
+  // deleteArticle,
+  resetArticles,
+} from "../features/articles/articleSlice";
 import Spinner from '../components/Spinner';
-import ProtocolUpdateForm from '../components/protocols/ProtocolUpdateForm';
+// import articleUpdateForm from '../components/articles/articleUpdateForm';
 
-function ProtocolDetail() {
-    const {protocolId} = useParams();
+function ArticleDetail() {
+    const {articleId} = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const {user} = useSelector(state=> state.auth);
-    const { protocols, isError, isLoading, message } = useSelector(
-      (state) => state.protocols
+    const { articles, isError, isLoading, message } = useSelector(
+      (state) => state.articles
     );
     
     useEffect(()=>{
@@ -24,15 +24,15 @@ function ProtocolDetail() {
             console.log(message);
         }
 
-        dispatch(getProtocolById(protocolId));
+        dispatch(getArticleById(articleId));
 
         return () => {
-            dispatch(resetProtocols());
+            dispatch(resetArticles());
         }
-    }, [isError, message, dispatch, protocolId]);
+    }, [isError, message, dispatch, articleId]);
 
     const deleteButtonClick = () => {
-        dispatch(deleteProtocol(protocolId));
+        // dispatch(deleteArticle(articleId));
         navigate('/');
     };
 
@@ -40,21 +40,21 @@ function ProtocolDetail() {
         return <Spinner/>
     }
 
-    const protocol = protocols;
-    const {name, createdAt, description} = protocol;
+    const article = articles;
+    const {title, createdAt, body} = article;
 
     return (
       <>
-        <h2>{name}</h2>
+        <h2>{title}</h2>
         <div>Created at: {new Date(createdAt).toLocaleDateString("en-US")}</div>
         <br />
 
-        {description ? <div>{description}</div> : <p>No Description</p>}
+        {body ? <div>{body}</div> : <p>No body</p>}
         <br />
 
-        {user && user._id === protocol.user ? (
+        {user && user._id === article.user ? (
           <>
-            <ProtocolUpdateForm />
+            {/* <articleUpdateForm /> */}
 
             <br/>
 
@@ -67,4 +67,4 @@ function ProtocolDetail() {
     );
 }
 
-export default ProtocolDetail
+export default ArticleDetail
