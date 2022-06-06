@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {updateArticle} from '../../features/articles/articleSlice';
 
 function ArticleUpdateForm() {
-    let { _id, title, body } = useSelector(
+    let { _id, title, body, protocol } = useSelector(
       (state) => state.articles.articles
     );
     
@@ -47,7 +47,7 @@ function ArticleUpdateForm() {
               onChange={(e) => setNewBody(e.target.value)}
             />
           </div>
-          {/* <div className="form-group">
+          <div className="form-group">
             <label htmlFor="protocol">Edit protocol:</label>
             <select
               name="protocol"
@@ -57,7 +57,7 @@ function ArticleUpdateForm() {
               <option value={null}>None</option>
               {protocols.length > 0 ? (
                 protocols.map((proto) => (
-                  <option key={proto._id} value={proto._id}>
+                  <option key={proto._id} value={proto._id} selected = {proto._id === protocol ? 'selected': ''}>
                     {proto.name}
                   </option>
                 ))
@@ -65,7 +65,7 @@ function ArticleUpdateForm() {
                 <></>
               )}
             </select>
-          </div> */}
+          </div>
           <div className="form-group">
             <button className="btn btn-block" type="submit">
               Edit Protocol

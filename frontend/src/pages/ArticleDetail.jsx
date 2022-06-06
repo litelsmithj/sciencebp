@@ -6,7 +6,7 @@ import {
   deleteArticle,
   resetArticles,
 } from "../features/articles/articleSlice";
-import { getProtocolById, resetProtocols } from '../features/protocols/protocolSlice';
+import { getProtocols, resetProtocols } from '../features/protocols/protocolSlice';
 import Spinner from '../components/Spinner';
 import ArticleUpdateForm from '../components/articles/ArticleUpdateForm';
 
@@ -25,32 +25,30 @@ function ArticleDetail() {
     if (articlesError) {
       console.log(articlesMessage);
     }
-
-    dispatch(getArticleById(articleId));
-
-    return () => {
-      dispatch(resetArticles());
-    };
-  }, [articlesError, articlesMessage, dispatch, articleId]);
-
-  const article = articles;
-  const { title, createdAt, body, protocol } = article;
-
-  useEffect(() => {
     if (protocolsError) {
       console.log(protocolsMessage);
     }
 
-    if (protocol) {
-      dispatch(getProtocolById(protocol));
-    }
+    dispatch(getArticleById(articleId));
+    dispatch(getProtocols());
 
     return () => {
+      dispatch(resetArticles());
       dispatch(resetProtocols());
     };
-  }, [protocol, protocolsError, dispatch, protocolsMessage]);
+  }, [articlesError, articlesMessage, dispatch, articleId, protocolsError, protocolsMessage]);
 
-  const fullProtocol = protocols;
+  const article = articles;
+  const { title, createdAt, body, protocol } = article;
+
+  let fullProtocol;
+  if (protocols.length > 0) {
+    protocols.forEach((proto) => {
+      if (proto._id === protocol){
+        fullProtocol = proto;
+      }
+    })
+  };
 
   const deleteButtonClick = () => {
     dispatch(deleteArticle(articleId));
@@ -64,7 +62,7 @@ function ArticleDetail() {
   return (
     <>
       <h2>{title}</h2>
-      <h3>Topic: {fullProtocol.name}</h3>
+      <h3>Topic: {fullProtocol ? fullProtocol.name : ''}</h3>
       <div>Created at: {new Date(createdAt).toLocaleDateString("en-US")}</div>
       <br />
 
