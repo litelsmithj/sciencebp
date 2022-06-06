@@ -6,65 +6,84 @@ import {
   deleteArticle,
   resetArticles,
 } from "../features/articles/articleSlice";
+import { getProtocolById, resetProtocols } from '../features/protocols/protocolSlice';
 import Spinner from '../components/Spinner';
 import ArticleUpdateForm from '../components/articles/ArticleUpdateForm';
 
 function ArticleDetail() {
-    const {articleId} = useParams();
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+  const { articleId } = useParams();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-    const {user} = useSelector(state=> state.auth);
-    const { articles, articlesError, articlesLoading, articlesMessage } = useSelector(
-      (state) => state.articles
-    );
-    
-    useEffect(()=>{
-        if (articlesError) {
-            console.log(articlesMessage);
-        }
+  const { user } = useSelector((state) => state.auth);
+  const { articles, articlesError, articlesLoading, articlesMessage } =
+    useSelector((state) => state.articles);
+  const { protocols, protocolsError, protocolsLoading, protocolsMessage } =
+    useSelector((state) => state.protocols);
 
-        dispatch(getArticleById(articleId));
-
-        return () => {
-            dispatch(resetArticles());
-        }
-    }, [articlesError, articlesMessage, dispatch, articleId]);
-
-    const deleteButtonClick = () => {
-        dispatch(deleteArticle(articleId));
-        navigate('/');
-    };
-
-    if (articlesLoading) {
-        return <Spinner/>
+  useEffect(() => {
+    if (articlesError) {
+      console.log(articlesMessage);
     }
 
-    const article = articles;
-    const {title, createdAt, body} = article;
+    dispatch(getArticleById(articleId));
 
-    return (
-      <>
-        <h2>{title}</h2>
-        <div>Created at: {new Date(createdAt).toLocaleDateString("en-US")}</div>
-        <br />
+    return () => {
+      dispatch(resetArticles());
+    };
+  }, [articlesError, articlesMessage, dispatch, articleId]);
 
-        {body ? <div>{body}</div> : <p>No body</p>}
-        <br />
+  const article = articles;
+  const { title, createdAt, body, protocol } = article;
 
-        {user && user._id === article.author ? (
-          <>
-            <ArticleUpdateForm />
+  useEffect(() => {
+    if (protocolsError) {
+      console.log(protocolsMessage);
+    }
 
-            <br/>
+    if (protocol) {
+      dispatch(getProtocolById(protocol));
+    }
 
-            <button onClick={() => deleteButtonClick()}>Delete</button>
-          </>
-        ) : (
-          <></>
-        )}
-      </>
-    );
+    return () => {
+      dispatch(resetProtocols());
+    };
+  }, [protocol, protocolsError, dispatch, protocolsMessage]);
+
+  const fullProtocol = protocols;
+
+  const deleteButtonClick = () => {
+    dispatch(deleteArticle(articleId));
+    navigate("/");
+  };
+
+  if (articlesLoading || protocolsLoading) {
+    return <Spinner />;
+  }
+
+  return (
+    <>
+      <h2>{title}</h2>
+      <h3>Topic: {fullProtocol.name}</h3>
+      <div>Created at: {new Date(createdAt).toLocaleDateString("en-US")}</div>
+      <br />
+
+      {body ? <div>{body}</div> : <p>No body</p>}
+      <br />
+
+      {user && user._id === article.author ? (
+        <>
+          <ArticleUpdateForm />
+
+          <br />
+
+          <button onClick={() => deleteButtonClick()}>Delete</button>
+        </>
+      ) : (
+        <></>
+      )}
+    </>
+  );
 }
 
 export default ArticleDetail

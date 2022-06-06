@@ -8,7 +8,7 @@ function ArticleItem({article, user}) {
 
     return (
         <div className="article">
-            <Link to = {"/article/"+article._id}>
+            <Link to = {"/articles/"+article._id}>
                 <div>{new Date(article.createdAt).toLocaleDateString("en-US")}</div>
                 <h2>{article.title}</h2>
             </Link>

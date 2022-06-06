@@ -18,8 +18,8 @@ function App() {
             <Route path="/" element={<Dashboard/>}></Route>
             <Route path = "/login" element={<Login/>}></Route>
             <Route path = "/register" element={<Register/>}></Route>
-            <Route path = "/protocol/:protocolId" element = {<ProtocolDetail/>}></Route>
-            <Route path = "/article/:articleId" element = {<ArticleDetail/>}></Route>
+            <Route path = "/protocols/:protocolId" element = {<ProtocolDetail/>}></Route>
+            <Route path = "/articles/:articleId" element = {<ArticleDetail/>}></Route>
           </Routes>
         </div>
       </Router>

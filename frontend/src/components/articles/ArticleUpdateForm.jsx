@@ -9,8 +9,10 @@ function ArticleUpdateForm() {
     
     const [newTitle, setNewTitle] = useState(title);
     const [newBody, setNewBody] = useState(body);
+    const [newProtocol, setNewProtocol] = useState(null);
 
     const dispatch = useDispatch();
+    const { protocols } = useSelector((state) => state.protocols);
 
     const onSubmit = (e)=> {
         e.preventDefault();
@@ -19,6 +21,7 @@ function ArticleUpdateForm() {
 
         setNewTitle(newTitle);
         setNewBody(newBody);
+        setNewProtocol(newProtocol);
     };
 
     return (
@@ -44,6 +47,25 @@ function ArticleUpdateForm() {
               onChange={(e) => setNewBody(e.target.value)}
             />
           </div>
+          {/* <div className="form-group">
+            <label htmlFor="protocol">Edit protocol:</label>
+            <select
+              name="protocol"
+              id="protocol"
+              onChange={(e) => setNewProtocol(e.target.value)}
+            >
+              <option value={null}>None</option>
+              {protocols.length > 0 ? (
+                protocols.map((proto) => (
+                  <option key={proto._id} value={proto._id}>
+                    {proto.name}
+                  </option>
+                ))
+              ) : (
+                <></>
+              )}
+            </select>
+          </div> */}
           <div className="form-group">
             <button className="btn btn-block" type="submit">
               Edit Protocol

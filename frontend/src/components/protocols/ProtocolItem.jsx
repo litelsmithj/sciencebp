@@ -8,7 +8,7 @@ function ProtocolItem({protocol, user}) {
 
   return (
     <div className="protocol">
-      <Link to={"/protocol/" + protocol._id}>
+      <Link to={"/protocols/" + protocol._id}>
         <div>{new Date(protocol.createdAt).toLocaleDateString("en-US")}</div>
         <h2>{protocol.name}</h2>
       </Link>
