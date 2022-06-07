@@ -24,19 +24,6 @@ const getArticleById = asyncHandler(async(req, res) => {
     res.status(200).json(article);
 });
 
-// @desc Get articles by protocol
-// @route GET /api/articles
-// @access public
-const getArticlesByProtocol = asyncHandler(async(req, res) => {
-    if (!req.body.protocol) {
-        res.status(400);
-        throw new Error("No protocol given");
-    }
-
-    const articles = await Article.find({protocol: req.body.protocol});
-    res.status(200).json(articles);
-});
-
 // @desc Set article
 // @route POST /api/articles
 // @access private
@@ -113,7 +100,6 @@ const deleteArticle = asyncHandler(async(req, res) => {
 module.exports = {
     getArticles,
     getArticleById,
-    getArticlesByProtocol,
     setArticle,
     updateArticle,
     deleteArticle

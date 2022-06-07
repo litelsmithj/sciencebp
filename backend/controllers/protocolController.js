@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Protocol = require('../models/protocolModel');
+const Article = require('../models/articleModel');
 const User = require('../models/userModel');
 
 // @desc Get protocols
@@ -25,6 +26,23 @@ const getProtocolById = asyncHandler(async (req, res) => {
 
     res.status(200).json(protocol); //Remove user from return?
 });
+
+// @desc Get articles by protocol
+// @route GET /api/articles
+// @access public
+const getArticlesByProtocol = asyncHandler(async (req, res) => {
+    const protocol = await Protocol.findById(req.params.id);
+
+    if (!protocol) {
+        res.status(400);
+        throw new Error("Protocol not found");
+    }
+
+    const articles = await Article.find({protocol: req.params.id})
+
+    res.status(200).json(articles); //Remove user from return?
+});
+
 
 // @desc Set protocol
 // @route POST /api/protocols
@@ -101,6 +119,7 @@ const deleteProtocol = asyncHandler(async (req, res) => {
 module.exports = {
     getProtocols,
     getProtocolById,
+    getArticlesByProtocol,
     setProtocol,
     updateProtocol,
     deleteProtocol

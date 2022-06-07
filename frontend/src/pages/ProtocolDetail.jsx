@@ -6,6 +6,8 @@ import {
   deleteProtocol,
   resetProtocols,
 } from "../features/protocols/protocolSlice";
+import {getArticlesByProtocol, resetArticles} from '../features/articles/articleSlice';
+import ArticleItem from '../components/articles/ArticleItem';
 import Spinner from '../components/Spinner';
 import ProtocolUpdateForm from '../components/protocols/ProtocolUpdateForm';
 
@@ -18,25 +20,32 @@ function ProtocolDetail() {
     const { protocols, protocolsError, protocolsLoading, protocolsMessage } = useSelector(
       (state) => state.protocols
     );
+    const { articles, articlesError, articlesLoading, articlesMessage } =
+      useSelector((state) => state.articles);
     
     useEffect(()=>{
         if (protocolsError) {
             console.log(protocolsMessage);
         }
+        if (articlesError) {
+          console.log(articlesMessage);
+        }
 
         dispatch(getProtocolById(protocolId));
+        dispatch(getArticlesByProtocol(protocolId));
 
         return () => {
             dispatch(resetProtocols());
+            dispatch(resetArticles());
         }
-    }, [protocolsError, protocolsMessage, dispatch, protocolId]);
+    }, [protocolsError, protocolsMessage, dispatch, protocolId, articlesError, articlesMessage]);
 
     const deleteButtonClick = () => {
         dispatch(deleteProtocol(protocolId));
         navigate('/');
     };
 
-    if (protocolsLoading) {
+    if (protocolsLoading || articlesLoading) {
         return <Spinner/>
     }
 
@@ -56,13 +65,30 @@ function ProtocolDetail() {
           <>
             <ProtocolUpdateForm />
 
-            <br/>
+            <br />
 
             <button onClick={() => deleteButtonClick()}>Delete</button>
+
+            <br />
+            <br />
           </>
         ) : (
           <></>
         )}
+
+        <h3>Articles</h3>
+
+        <section className="content">
+          {articles.length > 0 ? (
+            <div className="articles">
+              {articles.map((article) => (
+                <ArticleItem key={article._id} article={article} user={user} />
+              ))}
+            </div>
+          ) : (
+            <>There are no articles</>
+          )}
+        </section>
       </>
     );
 }

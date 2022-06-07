@@ -1,9 +1,15 @@
 import axios from 'axios';
 
 const API_URL = '/api/articles/';
+const PROTO_API_URL = '/api/protocols/';
 
 const getArticles = async () => {
     const response = await axios.get(API_URL);
+    return response.data;
+}
+
+const getArticlesByProtocol = async (protocolId) => {
+    const response = await axios.get(PROTO_API_URL+protocolId+'/articles');
     return response.data;
 }
 
@@ -51,6 +57,7 @@ const deleteArticle = async (articleId, token) => {
 const articleService = {
     getArticles,
     getArticleById,
+    getArticlesByProtocol,
     createArticle,
     updateArticle,
     deleteArticle,

@@ -18,6 +18,15 @@ export const getArticles = createAsyncThunk('articles/getAll', async (_, thunkAP
     }
 });
 
+export const getArticlesByProtocol = createAsyncThunk('articles/getAllByProtocol', async (protocolId, thunkAPI)=> {
+    try {
+        return await articleService.getArticlesByProtocol(protocolId);
+    } catch (error) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
 export const getArticleById = createAsyncThunk('article/getOne', async (articleId, thunkAPI)=> {
     try {
         return await articleService.getArticleById(articleId);
@@ -87,6 +96,19 @@ export const articleSlice = createSlice({
                 state.articles = action.payload;
             })
             .addCase(getArticleById.rejected, (state, action) => {
+                state.articlesLoading = false;
+                state.articlesError = true;
+                state.articlesMessage = action.payload;
+            })
+            .addCase(getArticlesByProtocol.pending, (state) => {
+                state.articlesLoading = true;
+            })
+            .addCase(getArticlesByProtocol.fulfilled, (state, action) => {
+                state.articlesLoading = false;
+                state.articlesSuccess = true;
+                state.articles = action.payload;
+            })
+            .addCase(getArticlesByProtocol.rejected, (state, action) => {
                 state.articlesLoading = false;
                 state.articlesError = true;
                 state.articlesMessage = action.payload;
