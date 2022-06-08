@@ -1,6 +1,7 @@
 import {useState} from 'react';
-import {useDispatch} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import {createProtocol} from '../../features/protocols/protocolSlice';
+import {createTracker} from '../../features/trackers/trackerSlice';
 
 function ProtocolForm() {
     const [name, setName] = useState('');
@@ -8,13 +9,26 @@ function ProtocolForm() {
 
     const dispatch = useDispatch();
 
-    const onSubmit = (e)=> {
+    const { protocolsLoading, protocolsError, protocolsMessage } = useSelector(state=> state.protocols);
+
+    const onSubmit = async (e)=> {
         e.preventDefault();
 
-        dispatch(createProtocol({name, description}));
+        const action = await dispatch(createProtocol({name, description}));
 
         setName('');
         setDescription('');
+
+        if (protocolsError) {
+          console.log(protocolsMessage);
+        }
+
+        if (action && !protocolsLoading && !protocolsError) {
+          const protocol = action.payload._id;
+          dispatch(
+            createTracker({ protocol })
+          );
+        }
     };
 
     return (

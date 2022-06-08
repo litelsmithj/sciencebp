@@ -123,6 +123,7 @@ export const protocolSlice = createSlice({
                 state.protocolsLoading = true;
             })
             .addCase(deleteProtocol.fulfilled, (state, action) => {
+                state.protocolsLoading = false;
                 state.protocols = state.protocols.filter(
                     (protocol) => protocol._id !== action.payload.id);
             })
