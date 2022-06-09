@@ -9,6 +9,20 @@ const getTrackers = asyncHandler(async(req,res) => {
     res.status(200).json(trackers);
 });
 
+// @desc Get protocol by id
+// @route GET /api/protocols/:id
+// @access public
+const getTrackerById = asyncHandler(async(req,res) => {
+    const tracker = await Tracker.findById(req.params.id);
+
+    if (!tracker) {
+        res.status(400);
+        throw new Error('Tracker not found');
+    }
+
+    res.status(200).json(tracker);
+});
+
 // @desc Set tracker
 // @route POST /api/trackers
 // @access private
@@ -29,5 +43,6 @@ const setTracker = asyncHandler(async(req,res) => {
 
 module.exports = {
     getTrackers,
+    getTrackerById,
     setTracker
 };

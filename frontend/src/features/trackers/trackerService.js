@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const API_URL = '/api/trackers/';
+const PROTO_API_URL = '/api/protocols/';
 
 const createTracker = async(trackerData, token) => {
     const config = {
@@ -26,10 +27,23 @@ const getTrackers = async(token) => {
     return response.data;
 }
 
+const getProtocolTrackerByUser = async(protocolId, token) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+
+    const response = await axios.get(PROTO_API_URL+protocolId+'/tracker', config);
+
+    return response.data;
+}
+
 const trackerService = {
     createTracker,
     getTrackers,
-
+    getProtocolTrackerByUser,
+    
 }
 
 export default trackerService;

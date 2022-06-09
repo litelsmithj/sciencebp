@@ -10,6 +10,11 @@ import {getArticlesByProtocol, resetArticles} from '../features/articles/article
 import ArticleItem from '../components/articles/ArticleItem';
 import Spinner from '../components/Spinner';
 import ProtocolUpdateForm from '../components/protocols/ProtocolUpdateForm';
+import {
+  getProtocolTrackerByUser,
+  resetTrackers,
+  createTracker
+} from "../features/trackers/trackerSlice";
 
 function ProtocolDetail() {
     const {protocolId} = useParams();
@@ -22,36 +27,67 @@ function ProtocolDetail() {
     );
     const { articles, articlesError, articlesLoading, articlesMessage } =
       useSelector((state) => state.articles);
+    const { trackers, trackersError, trackersLoading, trackersMessage } =
+      useSelector((state) => state.trackers);
     
     useEffect(()=>{
+      // Must create and call new function in useEffect to make async
+      async function fetchData() {
         if (protocolsError) {
             console.log(protocolsMessage);
         }
         if (articlesError) {
           console.log(articlesMessage);
         }
+        if (trackersError) {
+          console.log(trackersMessage);
+        }
 
-        dispatch(getProtocolById(protocolId));
+        const protocolAction = await dispatch(getProtocolById(protocolId));
         dispatch(getArticlesByProtocol(protocolId));
+
+        var trackerAction;
+        if (user) {
+          trackerAction = await dispatch(getProtocolTrackerByUser(protocolId));
+        }
+
+        // console.log(protocolAction);
+        // console.log(trackerAction);
+
+        // If tracker not already created and user logged in, create new tracker & show
+        if (user && protocolAction && trackerAction.payload == 0 && !protocolsLoading && !protocolsError) {
+          const protocol = protocolAction.payload._id;
+          dispatch(
+            createTracker({ protocol })
+          );
+          dispatch(getProtocolTrackerByUser(protocolId));
+        }
 
         return () => {
             dispatch(resetProtocols());
             dispatch(resetArticles());
+            dispatch(resetTrackers());
         }
-    }, [protocolsError, protocolsMessage, dispatch, protocolId, articlesError, articlesMessage]);
+      }
+
+      fetchData();
+    }, [protocolsError, protocolsMessage, dispatch, protocolId, articlesError, articlesMessage, trackersError, trackersMessage, user]);
 
     const deleteButtonClick = () => {
         dispatch(deleteProtocol(protocolId));
         navigate('/');
     };
 
-    if (protocolsLoading || articlesLoading) {
+    if (protocolsLoading || articlesLoading || trackersLoading) {
         return <Spinner/>
     }
 
     const protocol = protocols;
     const {name, createdAt, description} = protocol;
 
+    const tracker = trackers[0];
+
+    console.log(trackers);
     return (
       <>
         <h2>{name}</h2>
@@ -61,19 +97,33 @@ function ProtocolDetail() {
         {description ? <div>{description}</div> : <p>No Description</p>}
         <br />
 
-        {user && user._id === protocol.user ? (
+        {user ? (
           <>
-            <ProtocolUpdateForm />
+            {trackers.length > 0 ? (
+              <>Times Completed: {tracker.count}</>
+            ) : (
+              <></>
+            )}
 
-            <br />
+            {user._id === protocol.user ? (
+              <>
+                <ProtocolUpdateForm />
 
-            <button onClick={() => deleteButtonClick()}>Delete</button>
+                <br />
+
+                <button onClick={() => deleteButtonClick()}>Delete</button>
+              </>
+            ) : (<></>)
+            }
 
             <br />
             <br />
           </>
         ) : (
-          <></>
+          <>
+            <p className="demo-tracker">Login to track progress</p>
+            <br />
+          </>
         )}
 
         <h3>Articles</h3>

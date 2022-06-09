@@ -1,7 +1,8 @@
 const asyncHandler = require('express-async-handler');
 const Protocol = require('../models/protocolModel');
 const Article = require('../models/articleModel');
-const User = require('../models/userModel');
+const Tracker = require('../models/trackerModel');
+// const User = require('../models/userModel');
 
 // @desc Get protocols
 // @route GET /api/protocols
@@ -28,7 +29,7 @@ const getProtocolById = asyncHandler(async (req, res) => {
 });
 
 // @desc Get articles by protocol
-// @route GET /api/articles
+// @route GET /api/protocols/:id/articles
 // @access public
 const getArticlesByProtocol = asyncHandler(async (req, res) => {
     const protocol = await Protocol.findById(req.params.id);
@@ -43,6 +44,27 @@ const getArticlesByProtocol = asyncHandler(async (req, res) => {
     res.status(200).json(articles); //Remove user from return?
 });
 
+// @desc Get tracker by protocol & user
+// @route GET /api/protocols/:id/tracker
+// @access private
+
+const getProtocolTrackerByUser = asyncHandler (async(req, res) => {
+    const protocol = await Protocol.findById(req.params.id);
+
+    if (!protocol) {
+        res.status(400);
+        throw new Error('Protocol not found');
+    }
+
+    const tracker = await Tracker.find({protocol: req.params.id, user: req.user.id});
+
+    if (!tracker){
+        res.status(400);
+        throw new Error("Tracker not found");
+    }
+
+    res.status(200).json(tracker);
+});
 
 // @desc Set protocol
 // @route POST /api/protocols
@@ -120,6 +142,7 @@ module.exports = {
     getProtocols,
     getProtocolById,
     getArticlesByProtocol,
+    getProtocolTrackerByUser,
     setProtocol,
     updateProtocol,
     deleteProtocol

@@ -191,6 +191,10 @@ h3 {
   animation: spin 1.2s linear infinite;
 }
 
+.demo-tracker {
+  font-style: italic;
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);
