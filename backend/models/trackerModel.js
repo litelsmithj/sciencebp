@@ -20,4 +20,7 @@ const trackerSchema = mongoose.Schema({
     timestamps: true
 })
 
+// To fix double creation of the same tracker
+trackerSchema.index({protocol: 1, user: 1}, {unique: true})
+
 module.exports = mongoose.model('Tracker', trackerSchema);

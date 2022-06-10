@@ -1,5 +1,5 @@
 import {useParams, useNavigate} from 'react-router-dom';
-import {useEffect} from 'react';
+import {useEffect, useRef} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import {
   getProtocolById,
@@ -30,11 +30,16 @@ function ProtocolDetail() {
     const { trackers, trackersError, trackersLoading, trackersMessage } =
       useSelector((state) => state.trackers);
     
-    useEffect(()=>{
+    // Need to be useRef to use within useEffect - mutable objects
+    var protocolAction = useRef();
+    var articlesAction = useRef();
+    var trackerAction = useRef();
+
+    useEffect(() => {
       // Must create and call new function in useEffect to make async
-      async function fetchData() {
+      const fetchData = async () => {
         if (protocolsError) {
-            console.log(protocolsMessage);
+          console.log(protocolsMessage);
         }
         if (articlesError) {
           console.log(articlesMessage);
@@ -43,20 +48,17 @@ function ProtocolDetail() {
           console.log(trackersMessage);
         }
 
-        const protocolAction = await dispatch(getProtocolById(protocolId));
-        dispatch(getArticlesByProtocol(protocolId));
+        protocolAction.current = await dispatch(getProtocolById(protocolId));
 
-        var trackerAction;
+        articlesAction.current = await dispatch(getArticlesByProtocol(protocolId));
+
         if (user) {
-          trackerAction = await dispatch(getProtocolTrackerByUser(protocolId));
+          trackerAction.current = await dispatch(getProtocolTrackerByUser(protocolId));
         }
 
-        // console.log(protocolAction);
-        // console.log(trackerAction);
-
         // If tracker not already created and user logged in, create new tracker & show
-        if (user && protocolAction && trackerAction.payload == 0 && !protocolsLoading && !protocolsError) {
-          const protocol = protocolAction.payload._id;
+        if (user && protocolAction.current && trackerAction.current.payload.length === 0) {
+          const protocol = protocolAction.current.payload._id;
           dispatch(
             createTracker({ protocol })
           );
@@ -64,14 +66,30 @@ function ProtocolDetail() {
         }
 
         return () => {
-            dispatch(resetProtocols());
-            dispatch(resetArticles());
-            dispatch(resetTrackers());
-        }
+          dispatch(resetProtocols());
+          dispatch(resetArticles());
+          dispatch(resetTrackers());
+        };
       }
-
-      fetchData();
-    }, [protocolsError, protocolsMessage, dispatch, protocolId, articlesError, articlesMessage, trackersError, trackersMessage, user]);
+      
+      if (!protocolAction.current && !articlesAction.current && (!user || !trackerAction.current)){
+        fetchData();
+      }
+      
+    }, [
+      protocolsLoading,
+      protocolsError,
+      protocolsMessage,
+      dispatch,
+      protocolId,
+      articlesLoading,
+      articlesError,
+      articlesMessage,
+      trackersLoading,
+      trackersError,
+      trackersMessage,
+      user
+    ]);
 
     const deleteButtonClick = () => {
         dispatch(deleteProtocol(protocolId));
@@ -87,7 +105,6 @@ function ProtocolDetail() {
 
     const tracker = trackers[0];
 
-    console.log(trackers);
     return (
       <>
         <h2>{name}</h2>
