@@ -50,20 +50,11 @@ function ProtocolDetail() {
         }
 
         protocolAction.current = await dispatch(getProtocolById(protocolId));
-
         articlesAction.current = await dispatch(getArticlesByProtocol(protocolId));
 
         if (user) {
+          dispatch(createTracker({ protocol: protocolId })); // create if doesn't exist
           trackerAction.current = await dispatch(getProtocolTrackerByUser(protocolId));
-        }
-
-        // If tracker not already created and user logged in, create new tracker & show
-        if (user && protocolAction.current && trackerAction.current.payload.length === 0) {
-          const protocol = protocolAction.current.payload._id;
-          dispatch(
-            createTracker({ protocol })
-          );
-          dispatch(getProtocolTrackerByUser(protocolId));
         }
 
         return () => {
@@ -78,15 +69,12 @@ function ProtocolDetail() {
       }
       
     }, [
-      protocolsLoading,
       protocolsError,
       protocolsMessage,
       dispatch,
       protocolId,
-      articlesLoading,
       articlesError,
       articlesMessage,
-      trackersLoading,
       trackersError,
       trackersMessage,
       user
