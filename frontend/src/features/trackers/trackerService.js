@@ -43,7 +43,7 @@ const trackerService = {
     createTracker,
     getTrackers,
     getProtocolTrackerByUser,
-    
+
 }
 
 export default trackerService;

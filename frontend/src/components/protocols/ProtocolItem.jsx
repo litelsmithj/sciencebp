@@ -1,10 +1,16 @@
 import {deleteProtocol} from '../../features/protocols/protocolSlice';
 import {useDispatch} from 'react-redux';
 import {Link} from 'react-router-dom';
+import { deleteTracker } from '../../features/trackers/trackerSlice';
 
 function ProtocolItem({protocol, user}) {
 
   const dispatch = useDispatch();
+
+  const deleteButtonClick = () => {
+    dispatch(deleteProtocol(protocol._id));
+    dispatch(deleteTracker());
+  }
 
   return (
     <div className="protocol">
@@ -14,7 +20,7 @@ function ProtocolItem({protocol, user}) {
       </Link>
       {user && user._id === protocol.user ? (
         <button
-          onClick={() => dispatch(deleteProtocol(protocol._id))}
+          onClick={()=> deleteButtonClick()}
           className="close"
         >
           X

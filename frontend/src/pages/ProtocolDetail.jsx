@@ -13,7 +13,8 @@ import ProtocolUpdateForm from '../components/protocols/ProtocolUpdateForm';
 import {
   getProtocolTrackerByUser,
   resetTrackers,
-  createTracker
+  createTracker,
+  deleteTracker
 } from "../features/trackers/trackerSlice";
 
 function ProtocolDetail() {
@@ -93,6 +94,7 @@ function ProtocolDetail() {
 
     const deleteButtonClick = () => {
         dispatch(deleteProtocol(protocolId));
+        dispatch(deleteTracker());
         navigate('/');
     };
 

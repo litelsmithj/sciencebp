@@ -9,9 +9,9 @@ const getTrackers = asyncHandler(async(req,res) => {
     res.status(200).json(trackers);
 });
 
-// @desc Get protocol by id
-// @route GET /api/protocols/:id
-// @access public
+// @desc Get trackers by id
+// @route GET /api/trackers/:id
+// @access private
 const getTrackerById = asyncHandler(async(req,res) => {
     const tracker = await Tracker.findById(req.params.id);
 
