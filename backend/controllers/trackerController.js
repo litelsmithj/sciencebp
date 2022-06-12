@@ -1,10 +1,12 @@
 const asyncHandler = require('express-async-handler');
 const Tracker = require('../models/trackerModel');
+const User = require('../models/userModel');
 
 // @desc Get trackers
 // @route GET /api/trackers
 // @access private
-const getTrackers = asyncHandler(async(req,res) => {
+// Currently not used
+const getTrackers = asyncHandler(async(req, res) => {
     const trackers = await Tracker.find();
     res.status(200).json(trackers);
 });
@@ -12,6 +14,7 @@ const getTrackers = asyncHandler(async(req,res) => {
 // @desc Get trackers by id
 // @route GET /api/trackers/:id
 // @access private
+// Currently not used
 const getTrackerById = asyncHandler(async(req,res) => {
     const tracker = await Tracker.findById(req.params.id);
 
@@ -41,8 +44,39 @@ const setTracker = asyncHandler(async(req,res) => {
     res.status(200).json(tracker);
 });
 
+// @desc Add one to tracker-  Update
+// @route PUT /api/trackers/:id
+// @access private
+const addOne = asyncHandler(async(req, res) => {
+    const tracker = await Tracker.findById(req.params.id);
+    
+    if (!tracker) {
+        res.status(400);
+        throw new Error("Tracker not found");
+    }
+    
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+        res.status(401);
+        throw new Error("User not found");
+    }
+
+    if (tracker.user.toString() !== req.user.id) {
+        res.status(401);
+        throw new Error("User not authorized");
+    }
+
+    const updatedTracker = await Tracker.findByIdAndUpdate(req.params.id, {count: tracker.count + 1}, {
+        new: true
+    });
+
+    res.status(200).json(updatedTracker);
+});
+
 module.exports = {
     getTrackers,
     getTrackerById,
-    setTracker
+    setTracker,
+    addOne
 };

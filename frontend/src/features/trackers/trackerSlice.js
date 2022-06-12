@@ -29,6 +29,16 @@ export const getProtocolTrackerByUser = createAsyncThunk('ProtocolTracker/getByU
     }
 });
 
+export const addOne = createAsyncThunk('tracker/addOne', async(trackerId, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await trackerService.addOne(trackerId, token);
+    } catch (error) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
 export const deleteTracker = createAsyncThunk('tracker/delete', () => {}); // No function, just add cases to clear trackers slice
 
 export const createTracker = createAsyncThunk('tracker/create', async(trackerData, thunkAPI) => {
@@ -97,6 +107,19 @@ export const trackerSlice = createSlice({
                 state.trackers = []; // just clear
             })
             .addCase(deleteTracker.rejected, (state, action) => {
+                state.trackersLoading = false;
+                state.trackersError = true;
+                state.trackersMessage = action.payload;
+            })
+            .addCase(addOne.pending, (state) => {
+                state.trackersLoading = true;
+            })
+            .addCase(addOne.fulfilled, (state, action) => {
+                state.trackersLoading = false;
+                state.trackersSuccess = true;
+                state.trackers = action.payload;
+            })
+            .addCase(addOne.rejected, (state, action) => {
                 state.trackersLoading = false;
                 state.trackersError = true;
                 state.trackersMessage = action.payload;

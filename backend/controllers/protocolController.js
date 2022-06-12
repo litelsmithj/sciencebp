@@ -48,20 +48,14 @@ const getArticlesByProtocol = asyncHandler(async (req, res) => {
 // @route GET /api/protocols/:id/tracker
 // @access private
 const getProtocolTrackerByUser = asyncHandler (async(req, res) => {
-    const protocol = await Protocol.findById(req.params.id);
     const user = await User.findById(req.user.id);
-
-    if (!protocol) {
-        res.status(400);
-        throw new Error('Protocol not found');
-    }
 
     if (!user) {
         res.status(400);
         throw new Error('User not found');
     }
 
-    const tracker = await Tracker.find({protocol: protocol.id, user: user.id});
+    const tracker = await Tracker.find({protocol: req.params.id, user: user.id});
 
     if (!tracker){
         res.status(400);
@@ -94,7 +88,7 @@ const setProtocol = asyncHandler(async (req, res) => {
 // @access private
 const updateProtocol = asyncHandler(async (req, res) => {
     const protocol = await Protocol.findById(req.params.id);
-
+    
     if (!protocol) {
         res.status(400);
         throw new Error ('Protocol not found');

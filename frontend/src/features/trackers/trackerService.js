@@ -39,10 +39,23 @@ const getProtocolTrackerByUser = async(protocolId, token) => {
     return response.data;
 }
 
+const addOne = async(trackerId, token) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+
+    const response = await axios.put(API_URL+trackerId, {}, config);
+
+    return response.data;
+}
+
 const trackerService = {
     createTracker,
     getTrackers,
     getProtocolTrackerByUser,
+    addOne,
 
 }
 

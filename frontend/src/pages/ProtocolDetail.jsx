@@ -14,8 +14,10 @@ import {
   getProtocolTrackerByUser,
   resetTrackers,
   createTracker,
-  deleteTracker
+  deleteTracker,
+  addOne,
 } from "../features/trackers/trackerSlice";
+// import TrackerItem from '../components/trackers/TrackerItem';
 
 function ProtocolDetail() {
     const {protocolId} = useParams();
@@ -23,18 +25,19 @@ function ProtocolDetail() {
     const navigate = useNavigate();
 
     const {user} = useSelector(state=> state.auth);
-    const { protocols, protocolsError, protocolsLoading, protocolsMessage } = useSelector(
-      (state) => state.protocols
-    );
-    const { articles, articlesError, articlesLoading, articlesMessage } =
+    const { protocols, protocolsLoading, protocolsError, protocolsMessage } =
+      useSelector((state) => state.protocols);
+    const { articles, articlesLoading, articlesError, articlesMessage } =
       useSelector((state) => state.articles);
-    const { trackers, trackersError, trackersLoading, trackersMessage } =
-      useSelector((state) => state.trackers);
+    const { trackersError, trackersMessage, trackersLoading } = useSelector(
+      (state) => state.trackers
+    );
     
     // Need to be useRef to use within useEffect - mutable objects
     var protocolAction = useRef();
     var articlesAction = useRef();
     var trackerAction = useRef();
+    var count = useRef();
 
     useEffect(() => {
       // Must create and call new function in useEffect to make async
@@ -56,6 +59,8 @@ function ProtocolDetail() {
           dispatch(createTracker({ protocol: protocolId })); // create if doesn't exist
           trackerAction.current = await dispatch(getProtocolTrackerByUser(protocolId));
         }
+
+        count.current = trackerAction.current ? trackerAction.current.payload[0].count : "";
 
         return () => {
           dispatch(resetProtocols());
@@ -80,20 +85,24 @@ function ProtocolDetail() {
       user
     ]);
 
-    const deleteButtonClick = () => {
-        dispatch(deleteProtocol(protocolId));
-        dispatch(deleteTracker());
-        navigate('/');
-    };
-
-    if (protocolsLoading || articlesLoading || trackersLoading) {
-        return <Spinner/>
-    }
-
     const protocol = protocols;
     const {name, createdAt, description} = protocol;
 
-    const tracker = trackers[0];
+    if (protocolsLoading || articlesLoading || trackersLoading) {
+      return <Spinner />;
+    }
+
+    const deleteButtonClick = () => {
+      dispatch(deleteProtocol(protocolId));
+      dispatch(deleteTracker());
+      navigate("/");
+    };
+
+    const trackerButtonClick = () => {
+      count.current += 1;
+      dispatch(addOne(trackerAction.current.payload[0]._id));
+      dispatch(getProtocolTrackerByUser(protocolId));
+    }
 
     return (
       <>
@@ -106,11 +115,15 @@ function ProtocolDetail() {
 
         {user ? (
           <>
-            {trackers.length > 0 ? (
-              <>Times Completed: {tracker.count}</>
-            ) : (
-              <></>
-            )}
+            <div className="tracker">
+              <>Times Completed: {count.current}</>
+              <button
+                onClick={() => trackerButtonClick()}
+                className="close"
+              >
+                +
+              </button>
+            </div>
 
             {user._id === protocol.user ? (
               <>
@@ -120,8 +133,9 @@ function ProtocolDetail() {
 
                 <button onClick={() => deleteButtonClick()}>Delete</button>
               </>
-            ) : (<></>)
-            }
+            ) : (
+              <></>
+            )}
 
             <br />
             <br />
