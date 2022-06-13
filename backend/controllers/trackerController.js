@@ -44,10 +44,10 @@ const setTracker = asyncHandler(async(req,res) => {
     res.status(200).json(tracker);
 });
 
-// @desc Add one to tracker-  Update
+// @desc Update the day to 0 or 1
 // @route PUT /api/trackers/:id
 // @access private
-const addOne = asyncHandler(async(req, res) => {
+const updateTracker = asyncHandler(async(req, res) => {
     const tracker = await Tracker.findById(req.params.id);
     
     if (!tracker) {
@@ -67,7 +67,10 @@ const addOne = asyncHandler(async(req, res) => {
         throw new Error("User not authorized");
     }
 
-    const updatedTracker = await Tracker.findByIdAndUpdate(req.params.id, {count: tracker.count + 1}, {
+    tracker.days.set(req.body.key, req.body.value);
+    tracker.count = req.body.count;
+
+    const updatedTracker = await Tracker.findByIdAndUpdate(req.params.id, tracker, {
         new: true
     });
 
@@ -78,5 +81,5 @@ module.exports = {
     getTrackers,
     getTrackerById,
     setTracker,
-    addOne
+    updateTracker,
 };

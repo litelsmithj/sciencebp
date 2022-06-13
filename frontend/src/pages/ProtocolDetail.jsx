@@ -15,9 +15,8 @@ import {
   resetTrackers,
   createTracker,
   deleteTracker,
-  addOne,
+  updateTracker,
 } from "../features/trackers/trackerSlice";
-// import TrackerItem from '../components/trackers/TrackerItem';
 
 function ProtocolDetail() {
     const {protocolId} = useParams();
@@ -29,7 +28,7 @@ function ProtocolDetail() {
       useSelector((state) => state.protocols);
     const { articles, articlesLoading, articlesError, articlesMessage } =
       useSelector((state) => state.articles);
-    const { trackersError, trackersMessage, trackersLoading } = useSelector(
+    const { trackersError, trackersMessage } = useSelector(
       (state) => state.trackers
     );
     
@@ -88,7 +87,8 @@ function ProtocolDetail() {
     const protocol = protocols;
     const {name, createdAt, description} = protocol;
 
-    if (protocolsLoading || articlesLoading || trackersLoading) {
+    // trackerAction.current included so that spinner is rendered initially while trackers are loading, not when updating
+    if (protocolsLoading || articlesLoading || (user && !trackerAction.current)) {
       return <Spinner />;
     }
 
@@ -98,11 +98,23 @@ function ProtocolDetail() {
       navigate("/");
     };
 
-    const trackerButtonClick = () => {
-      count.current += 1;
-      dispatch(addOne(trackerAction.current.payload[0]._id));
+    const dayClick = (e) => {
+      if (e.target.checked) {
+        count.current += 1;
+      } else {
+        count.current -= 1;
+      }
+
+      dispatch(
+        updateTracker({
+          _id: trackerAction.current.payload[0]._id,
+          key: e.target.id,
+          value: e.target.checked,
+          count: count.current
+        })
+      );
       dispatch(getProtocolTrackerByUser(protocolId));
-    }
+    };
 
     return (
       <>
@@ -117,12 +129,19 @@ function ProtocolDetail() {
           <>
             <div className="tracker">
               <>Times Completed: {count.current}</>
-              <button
-                onClick={() => trackerButtonClick()}
-                className="close"
-              >
-                +
-              </button>
+              <br />
+              {trackerAction.current ? (
+                <>
+                  {Object.keys(trackerAction.current.payload[0].days).map((day) => (
+                    <div key = {day}>
+                      <input type="checkbox" id={day} onClick= {(e)=> dayClick(e)} defaultChecked = {trackerAction.current.payload[0].days[day]}></input>
+                      <label htmlFor={day}>{day}</label>
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <></>
+              )}
             </div>
 
             {user._id === protocol.user ? (

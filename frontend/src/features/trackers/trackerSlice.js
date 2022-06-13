@@ -29,22 +29,22 @@ export const getProtocolTrackerByUser = createAsyncThunk('ProtocolTracker/getByU
     }
 });
 
-export const addOne = createAsyncThunk('tracker/addOne', async(trackerId, thunkAPI) => {
-    try {
-        const token = thunkAPI.getState().auth.user.token;
-        return await trackerService.addOne(trackerId, token);
-    } catch (error) {
-        const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
-        return thunkAPI.rejectWithValue(message);
-    }
-});
-
 export const deleteTracker = createAsyncThunk('tracker/delete', () => {}); // No function, just add cases to clear trackers slice
 
 export const createTracker = createAsyncThunk('tracker/create', async(trackerData, thunkAPI) => {
     try {
         const token = thunkAPI.getState().auth.user.token;
         return await trackerService.createTracker(trackerData, token);
+    } catch (error) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+export const updateTracker = createAsyncThunk('tracker/update', async(trackerData, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await trackerService.updateTracker(trackerData, token);
     } catch (error) {
         const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
         return thunkAPI.rejectWithValue(message);
@@ -111,15 +111,15 @@ export const trackerSlice = createSlice({
                 state.trackersError = true;
                 state.trackersMessage = action.payload;
             })
-            .addCase(addOne.pending, (state) => {
+            .addCase(updateTracker.pending, (state) => {
                 state.trackersLoading = true;
             })
-            .addCase(addOne.fulfilled, (state, action) => {
+            .addCase(updateTracker.fulfilled, (state, action) => {
                 state.trackersLoading = false;
                 state.trackersSuccess = true;
                 state.trackers = action.payload;
             })
-            .addCase(addOne.rejected, (state, action) => {
+            .addCase(updateTracker.rejected, (state, action) => {
                 state.trackersLoading = false;
                 state.trackersError = true;
                 state.trackersMessage = action.payload;
