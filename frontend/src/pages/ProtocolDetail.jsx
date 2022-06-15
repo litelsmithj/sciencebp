@@ -29,8 +29,9 @@ function ProtocolDetail() {
   var diff = today.getDate() - day + (day === 0 ? -6 : 1);
 
   var startOfWeek = new Date(today.setDate(diff));
-  var mm = String(startOfWeek.getMonth() + 1).padStart(2, "0");
-  var dd = String(startOfWeek.getDate()).padStart(2, "0");
+  var month = String(startOfWeek.getMonth() + 1).padStart(2, "0");
+  var monDayOfMonth = String(startOfWeek.getDate()).padStart(2, "0");
+  var dateString = month + '/' + monDayOfMonth;
 
   const { user } = useSelector((state) => state.auth);
   const { protocols, protocolsLoading, protocolsError, protocolsMessage } =
@@ -66,7 +67,7 @@ function ProtocolDetail() {
       );
 
       if (user) {
-        dispatch(createTracker({ protocol: protocolId })); // create if doesn't exist
+        dispatch(createTracker({ protocol: protocolId, dateString })); // create if doesn't exist
         trackerAction.current = await dispatch(
           getProtocolTrackerByUser(protocolId)
         );
@@ -100,6 +101,7 @@ function ProtocolDetail() {
     trackersError,
     trackersMessage,
     user,
+    dateString
   ]);
 
   const protocol = protocols;
@@ -126,6 +128,7 @@ function ProtocolDetail() {
     dispatch(
       updateTracker({
         _id: trackerAction.current.payload[0]._id,
+        date: dateString,
         key: e.target.id,
         value: e.target.checked,
         count: count.current,
@@ -133,6 +136,10 @@ function ProtocolDetail() {
     );
     dispatch(getProtocolTrackerByUser(protocolId));
   };
+
+  if (user){
+    var days = trackerAction.current.payload[0].days.find(day => day.date === dateString);
+  }
 
   return (
     <>
@@ -151,8 +158,8 @@ function ProtocolDetail() {
             {trackerAction.current ? (
               <>
                 <br/>
-                Week of {mm + '/' + dd}
-                {Object.keys(trackerAction.current.payload[0].days).map(
+                Week of {dateString}
+                {Object.keys(days.values).map(
                   (day) => (
                     <div key={day}>
                       <input
@@ -160,7 +167,7 @@ function ProtocolDetail() {
                         id={day}
                         onClick={(e) => dayClick(e)}
                         defaultChecked={
-                          trackerAction.current.payload[0].days[day]
+                          days.values[day]
                         }
                       ></input>
                       <label htmlFor={day}>{day}</label>

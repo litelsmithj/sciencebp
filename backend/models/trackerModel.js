@@ -15,11 +15,10 @@ const trackerSchema = mongoose.Schema({
         type: Number,
         required: true
     },
-    days: {
-        type: Map,
-        of: Boolean,
-        default: {'Mon': 0, 'Tue': 0, 'Wed': 0, 'Thu': 0, 'Fri': 0, 'Sat': 0, 'Sun': 0}
-    }
+    days: [{
+        date: String,
+        values: mongoose.Schema.Types.Mixed
+    }]
     
 }, {
     timestamps: true

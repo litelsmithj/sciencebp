@@ -34,17 +34,36 @@ const setTracker = asyncHandler(async(req,res) => {
         res.status(400);
         throw new Error('Tracker not created');
     }
+    
+    var tracker = await Tracker.find({protocol: req.body.protocol, user: req.user.id}); 
+    
+    // Maybe add if exists function instead of including in the POST req
+    if (tracker.length > 0) {
+        var trackerDays = tracker[0].days;
+        var trackerDay = trackerDays.find((day)=> day.date === req.body.dateString);
 
-    const tracker = await Tracker.create({
-        user: req.user.id,
-        protocol: req.body.protocol,
-        count: 0
-    });
+        if (!trackerDay){
+            trackerDays.push({'date': req.body.dateString, values: {'Mon': false, 'Tue': false, 'Wed': false, 'Thu': false, 'Fri': false, 'Sat': false, 'Sun': false}})
 
-    res.status(200).json(tracker);
+            const updatedTracker = await Tracker.findOneAndUpdate({protocol: req.body.protocol, user: req.user.id}, {days: trackerDays}, {
+                new: true
+            });
+
+            res.status(200).json(updatedTracker);
+        }
+        
+    } else {
+        const newTracker = await Tracker.create({
+            user: req.user.id,
+            protocol: req.body.protocol,
+            count: 0,
+            days: [{'date': req.body.dateString, values: {'Mon': false, 'Tue': false, 'Wed': false, 'Thu': false, 'Fri': false, 'Sat': false, 'Sun': false}}]
+        });
+        res.status(200).json(newTracker);
+    }
 });
 
-// @desc Update the day to 0 or 1
+// @desc Update the tracker and counter for the given day
 // @route PUT /api/trackers/:id
 // @access private
 const updateTracker = asyncHandler(async(req, res) => {
@@ -67,7 +86,16 @@ const updateTracker = asyncHandler(async(req, res) => {
         throw new Error("User not authorized");
     }
 
-    tracker.days.set(req.body.key, req.body.value);
+    var trackerValues = tracker.days.find((day)=> day.date === req.body.date).values;
+    
+    Object.keys(trackerValues).forEach(dow => {
+        if (dow === req.body.key){
+            trackerValues[dow] = req.body.value;
+        }
+    });
+    
+    tracker.days.find((day)=> day.date === req.body.date).values = trackerValues;
+    
     tracker.count = req.body.count;
 
     const updatedTracker = await Tracker.findByIdAndUpdate(req.params.id, tracker, {
