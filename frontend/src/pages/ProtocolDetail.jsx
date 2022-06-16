@@ -159,9 +159,10 @@ function ProtocolDetail() {
               <>
                 <br/>
                 Week of {dateString}
+                <br/>
                 {Object.keys(days.values).map(
                   (day) => (
-                    <div key={day}>
+                    <div key={day} className = "tracker-day">
                       <input
                         type="checkbox"
                         id={day}
