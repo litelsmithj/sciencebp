@@ -99,6 +99,15 @@ h3 {
   position: relative;
 }
 
+.tracker-day {
+  padding: 5px;
+  display: inline-block;
+}
+
+.tracker-day > * {
+  padding: 1px;
+}
+
 .protocol .close, .article .close {
   position: absolute;
   top: 10px;

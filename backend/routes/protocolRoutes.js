@@ -9,6 +9,6 @@ router.route('/:id').get(getProtocolById).put(protect, updateProtocol).delete(pr
 
 router.route('/:id/articles').get(getArticlesByProtocol);
 
-router.route('/:id/tracker').get(protect, getProtocolTrackerByUser);
+router.route('/:id/tracker').get(protect, getProtocolTrackerByUser)
 
 module.exports = router;

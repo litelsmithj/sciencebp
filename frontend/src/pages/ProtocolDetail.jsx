@@ -1,5 +1,5 @@
 import {useParams, useNavigate} from 'react-router-dom';
-import {useEffect} from 'react';
+import {useEffect, useRef} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import {
   getProtocolById,
@@ -13,134 +13,211 @@ import ProtocolUpdateForm from '../components/protocols/ProtocolUpdateForm';
 import {
   getProtocolTrackerByUser,
   resetTrackers,
-  createTracker
+  createTracker,
+  deleteTracker,
+  updateTracker,
 } from "../features/trackers/trackerSlice";
 
 function ProtocolDetail() {
-    const {protocolId} = useParams();
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+  const { protocolId } = useParams();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-    const {user} = useSelector(state=> state.auth);
-    const { protocols, protocolsError, protocolsLoading, protocolsMessage } = useSelector(
-      (state) => state.protocols
-    );
-    const { articles, articlesError, articlesLoading, articlesMessage } =
-      useSelector((state) => state.articles);
-    const { trackers, trackersError, trackersLoading, trackersMessage } =
-      useSelector((state) => state.trackers);
-    
-    useEffect(()=>{
-      // Must create and call new function in useEffect to make async
-      async function fetchData() {
-        if (protocolsError) {
-            console.log(protocolsMessage);
-        }
-        if (articlesError) {
-          console.log(articlesMessage);
-        }
-        if (trackersError) {
-          console.log(trackersMessage);
-        }
+  var today = new Date();
+  var day = today.getDay();
 
-        const protocolAction = await dispatch(getProtocolById(protocolId));
-        dispatch(getArticlesByProtocol(protocolId));
+  var diff = today.getDate() - day + (day === 0 ? -6 : 1);
 
-        var trackerAction;
-        if (user) {
-          trackerAction = await dispatch(getProtocolTrackerByUser(protocolId));
-        }
+  var startOfWeek = new Date(today.setDate(diff));
+  var month = String(startOfWeek.getMonth() + 1).padStart(2, "0");
+  var monDayOfMonth = String(startOfWeek.getDate()).padStart(2, "0");
+  var dateString = month + '/' + monDayOfMonth;
 
-        // console.log(protocolAction);
-        // console.log(trackerAction);
+  const { user } = useSelector((state) => state.auth);
+  const { protocols, protocolsLoading, protocolsError, protocolsMessage } =
+    useSelector((state) => state.protocols);
+  const { articles, articlesLoading, articlesError, articlesMessage } =
+    useSelector((state) => state.articles);
+  const { trackersError, trackersMessage } = useSelector(
+    (state) => state.trackers
+  );
 
-        // If tracker not already created and user logged in, create new tracker & show
-        if (user && protocolAction && trackerAction.payload == 0 && !protocolsLoading && !protocolsError) {
-          const protocol = protocolAction.payload._id;
-          dispatch(
-            createTracker({ protocol })
-          );
-          dispatch(getProtocolTrackerByUser(protocolId));
-        }
+  // Need to be useRef to use within useEffect - mutable objects
+  var protocolAction = useRef();
+  var articlesAction = useRef();
+  var trackerAction = useRef();
+  var count = useRef();
 
-        return () => {
-            dispatch(resetProtocols());
-            dispatch(resetArticles());
-            dispatch(resetTrackers());
-        }
+  useEffect(() => {
+    // Must create and call new function in useEffect to make async
+    const fetchData = async () => {
+      if (protocolsError) {
+        console.log(protocolsMessage);
+      }
+      if (articlesError) {
+        console.log(articlesMessage);
+      }
+      if (trackersError) {
+        console.log(trackersMessage);
       }
 
-      fetchData();
-    }, [protocolsError, protocolsMessage, dispatch, protocolId, articlesError, articlesMessage, trackersError, trackersMessage, user]);
+      protocolAction.current = await dispatch(getProtocolById(protocolId));
+      articlesAction.current = await dispatch(
+        getArticlesByProtocol(protocolId)
+      );
 
-    const deleteButtonClick = () => {
-        dispatch(deleteProtocol(protocolId));
-        navigate('/');
+      if (user) {
+        dispatch(createTracker({ protocol: protocolId, dateString })); // create if doesn't exist
+        trackerAction.current = await dispatch(
+          getProtocolTrackerByUser(protocolId)
+        );
+      }
+
+      count.current = trackerAction.current
+        ? trackerAction.current.payload[0].count
+        : "";
+
+      return () => {
+        dispatch(resetProtocols());
+        dispatch(resetArticles());
+        dispatch(resetTrackers());
+      };
     };
 
-    if (protocolsLoading || articlesLoading || trackersLoading) {
-        return <Spinner/>
+    if (
+      !protocolAction.current &&
+      !articlesAction.current &&
+      (!user || !trackerAction.current)
+    ) {
+      fetchData();
+    }
+  }, [
+    protocolsError,
+    protocolsMessage,
+    dispatch,
+    protocolId,
+    articlesError,
+    articlesMessage,
+    trackersError,
+    trackersMessage,
+    user,
+    dateString
+  ]);
+
+  const protocol = protocols;
+  const { name, createdAt, description } = protocol;
+
+  // trackerAction.current included so that spinner is rendered initially while trackers are loading, not when updating
+  if (protocolsLoading || articlesLoading || (user && !trackerAction.current)) {
+    return <Spinner />;
+  }
+
+  const deleteButtonClick = () => {
+    dispatch(deleteProtocol(protocolId));
+    dispatch(deleteTracker());
+    navigate("/");
+  };
+
+  const dayClick = (e) => {
+    if (e.target.checked) {
+      count.current += 1;
+    } else {
+      count.current -= 1;
     }
 
-    const protocol = protocols;
-    const {name, createdAt, description} = protocol;
+    dispatch(
+      updateTracker({
+        _id: trackerAction.current.payload[0]._id,
+        date: dateString,
+        key: e.target.id,
+        value: e.target.checked,
+        count: count.current,
+      })
+    );
+    dispatch(getProtocolTrackerByUser(protocolId));
+  };
 
-    const tracker = trackers[0];
+  if (user){
+    var days = trackerAction.current.payload[0].days.find(day => day.date === dateString);
+  }
 
-    console.log(trackers);
-    return (
-      <>
-        <h2>{name}</h2>
-        <div>Created at: {new Date(createdAt).toLocaleDateString("en-US")}</div>
-        <br />
+  return (
+    <>
+      <h2>{name}</h2>
+      <div>Created at: {new Date(createdAt).toLocaleDateString("en-US")}</div>
+      <br />
 
-        {description ? <div>{description}</div> : <p>No Description</p>}
-        <br />
+      {description ? <div>{description}</div> : <p>No Description</p>}
+      <br />
 
-        {user ? (
-          <>
-            {trackers.length > 0 ? (
-              <>Times Completed: {tracker.count}</>
+      {user ? (
+        <>
+          <div className="tracker">
+            <>Times Completed: {count.current}</>
+            <br />
+            {trackerAction.current ? (
+              <>
+                <br/>
+                Week of {dateString}
+                <br/>
+                {Object.keys(days.values).map(
+                  (day) => (
+                    <div key={day} className = "tracker-day">
+                      <input
+                        type="checkbox"
+                        id={day}
+                        onClick={(e) => dayClick(e)}
+                        defaultChecked={
+                          days.values[day]
+                        }
+                      ></input>
+                      <label htmlFor={day}>{day}</label>
+                    </div>
+                  )
+                )}
+              </>
             ) : (
               <></>
             )}
+          </div>
 
-            {user._id === protocol.user ? (
-              <>
-                <ProtocolUpdateForm />
+          {user._id === protocol.user ? (
+            <>
+              <ProtocolUpdateForm />
 
-                <br />
+              <br />
 
-                <button onClick={() => deleteButtonClick()}>Delete</button>
-              </>
-            ) : (<></>)
-            }
-
-            <br />
-            <br />
-          </>
-        ) : (
-          <>
-            <p className="demo-tracker">Login to track progress</p>
-            <br />
-          </>
-        )}
-
-        <h3>Articles</h3>
-
-        <section className="content">
-          {articles.length > 0 ? (
-            <div className="articles">
-              {articles.map((article) => (
-                <ArticleItem key={article._id} article={article} user={user} />
-              ))}
-            </div>
+              <button onClick={() => deleteButtonClick()}>Delete</button>
+            </>
           ) : (
-            <>There are no articles</>
+            <></>
           )}
-        </section>
-      </>
-    );
+
+          <br />
+          <br />
+        </>
+      ) : (
+        <>
+          <p className="demo-tracker">Login to track progress</p>
+          <br />
+        </>
+      )}
+
+      <h3>Articles</h3>
+
+      <section className="content">
+        {articles.length > 0 ? (
+          <div className="articles">
+            {articles.map((article) => (
+              <ArticleItem key={article._id} article={article} user={user} />
+            ))}
+          </div>
+        ) : (
+          <>There are no articles</>
+        )}
+      </section>
+    </>
+  );
 }
 
 export default ProtocolDetail

@@ -2,7 +2,7 @@ const asyncHandler = require('express-async-handler');
 const Protocol = require('../models/protocolModel');
 const Article = require('../models/articleModel');
 const Tracker = require('../models/trackerModel');
-// const User = require('../models/userModel');
+const User = require('../models/userModel');
 
 // @desc Get protocols
 // @route GET /api/protocols
@@ -47,16 +47,15 @@ const getArticlesByProtocol = asyncHandler(async (req, res) => {
 // @desc Get tracker by protocol & user
 // @route GET /api/protocols/:id/tracker
 // @access private
-
 const getProtocolTrackerByUser = asyncHandler (async(req, res) => {
-    const protocol = await Protocol.findById(req.params.id);
+    const user = await User.findById(req.user.id);
 
-    if (!protocol) {
+    if (!user) {
         res.status(400);
-        throw new Error('Protocol not found');
+        throw new Error('User not found');
     }
 
-    const tracker = await Tracker.find({protocol: req.params.id, user: req.user.id});
+    const tracker = await Tracker.find({protocol: req.params.id, user: user.id});
 
     if (!tracker){
         res.status(400);
@@ -89,7 +88,7 @@ const setProtocol = asyncHandler(async (req, res) => {
 // @access private
 const updateProtocol = asyncHandler(async (req, res) => {
     const protocol = await Protocol.findById(req.params.id);
-
+    
     if (!protocol) {
         res.status(400);
         throw new Error ('Protocol not found');
@@ -112,7 +111,7 @@ const updateProtocol = asyncHandler(async (req, res) => {
     res.status(200).json(updatedProtocol);
 });
 
-// @desc Delete protocol
+// @desc Delete protocol & corresponding trackers
 // @route DELETE /api/protocols/:id
 // @access private
 const deleteProtocol = asyncHandler(async (req, res) => {
@@ -133,6 +132,9 @@ const deleteProtocol = asyncHandler(async (req, res) => {
         throw new Error("User not authorized");
     }
 
+    const trackers = Tracker.find({protocol: protocol.id});
+
+    await trackers.deleteMany();
     await protocol.deleteOne();
 
     res.status(200).json({ id: req.params.id});
@@ -145,7 +147,7 @@ module.exports = {
     getProtocolTrackerByUser,
     setProtocol,
     updateProtocol,
-    deleteProtocol
+    deleteProtocol,
 }
 
 
