@@ -1,4 +1,4 @@
-import {FaSignInAlt, FaSignOutAlt, FaUser} from 'react-icons/fa';
+import {FaSignInAlt, FaSignOutAlt, FaUser, FaPen} from 'react-icons/fa';
 import {Link, useNavigate} from 'react-router-dom';
 import {useSelector, useDispatch} from 'react-redux';
 import {logout, reset} from '../features/auth/authSlice';
@@ -19,28 +19,35 @@ function Header() {
         <div className="logo">
           <Link to="/">SBP</Link>
         </div>
-        <ul>
-          {user ? (
+        {user ? (
+          <>
+            <ul>
+              <li>
+                <button className="btn-create btn" onClick={()=> navigate('/creator')}>
+                  <FaPen/> Create
+                </button>
+              </li>
+              <li>
+                <button className="btn" onClick={onLogout}>
+                  <FaSignOutAlt /> Logout
+                </button>
+              </li>
+            </ul>
+          </>
+        ) : (
+          <ul>
             <li>
-              <button className="btn" onClick = {onLogout}>
-                <FaSignOutAlt /> Logout
-              </button>
+              <Link to="/login">
+                <FaSignInAlt /> Login
+              </Link>
             </li>
-          ) : (
-            <>
-              <li>
-                <Link to="/login">
-                  <FaSignInAlt /> Login
-                </Link>
-              </li>
-              <li>
-                <Link to="/register">
-                  <FaUser /> Register
-                </Link>
-              </li>
-            </>
-          )}
-        </ul>
+            <li>
+              <Link to="/register">
+                <FaUser /> Register
+              </Link>
+            </li>
+          </ul>
+        )}
       </header>
     );
 }

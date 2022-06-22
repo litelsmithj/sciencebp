@@ -3,6 +3,7 @@ import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Header from './components/Header';
 import Dashboard from './pages/Dashboard';
+import Creator from './pages/Creator';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import ProtocolDetail from './pages/ProtocolDetail';
@@ -16,6 +17,7 @@ function App() {
           <Header/>
           <Routes>
             <Route path="/" element={<Dashboard/>}></Route>
+            <Route path="/creator" element={<Creator/>}></Route>
             <Route path = "/login" element={<Login/>}></Route>
             <Route path = "/register" element={<Register/>}></Route>
             <Route path = "/protocols/:protocolId" element = {<ProtocolDetail/>}></Route>

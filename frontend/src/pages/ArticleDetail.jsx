@@ -9,6 +9,7 @@ import {
 import { getProtocols, resetProtocols } from '../features/protocols/protocolSlice';
 import Spinner from '../components/Spinner';
 import ArticleUpdateForm from '../components/articles/ArticleUpdateForm';
+import { FaTrash } from "react-icons/fa";
 
 function ArticleDetail() {
   const { articleId } = useParams();
@@ -62,7 +63,7 @@ function ArticleDetail() {
   return (
     <>
       <h2>{title}</h2>
-      <h3>Topic: {fullProtocol ? fullProtocol.name : ''}</h3>
+      <h3>{fullProtocol ? 'Topic: ' + fullProtocol.name : ''}</h3>
       <div>Created at: {new Date(createdAt).toLocaleDateString("en-US")}</div>
       <br />
 
@@ -75,7 +76,9 @@ function ArticleDetail() {
 
           <br />
 
-          <button onClick={() => deleteButtonClick()}>Delete</button>
+          <button className= "btn-delete btn" onClick={() => deleteButtonClick()}>
+            <FaTrash/> Delete
+          </button>
         </>
       ) : (
         <></>

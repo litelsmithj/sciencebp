@@ -38,11 +38,12 @@ function ProtocolForm() {
           </div>
           <div className="form-group">
             <label htmlFor="description">Description</label>
-            <input
-              type="text"
+            <textarea
               id="description"
               name="description"
               value={description}
+              rows="5"
+              placeholder="Niche routines that improve your wellbeing e.g. salt in water for electrolytes"
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>

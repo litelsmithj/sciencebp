@@ -15,6 +15,18 @@ const createTracker = async(trackerData, token) => {
     return response.data;
 };
 
+const trackerExists = async(trackerData, token) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+
+    const response = await axios.post(API_URL+'exists', trackerData, config);
+
+    return response.data;
+};
+
 const getTrackers = async(token) => {
     const config = {
         headers: {
@@ -56,7 +68,7 @@ const trackerService = {
     getTrackers,
     getProtocolTrackerByUser,
     updateTracker,
-
+    trackerExists,
 }
 
 export default trackerService;

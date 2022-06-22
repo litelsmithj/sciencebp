@@ -39,11 +39,12 @@ function ArticleUpdateForm() {
           </div>
           <div className="form-group">
             <label htmlFor="body">Body</label>
-            <input
-              type="text"
+            <textarea
               id="body"
               name="body"
               value={newBody}
+              rows="5"
+              placeholder="Share a science-based story related or unrelated to a specific protocol"
               onChange={(e) => setNewBody(e.target.value)}
             />
           </div>
@@ -57,7 +58,11 @@ function ArticleUpdateForm() {
               <option value={null}>None</option>
               {protocols.length > 0 ? (
                 protocols.map((proto) => (
-                  <option key={proto._id} value={proto._id} selected = {proto._id === protocol ? 'selected': ''}>
+                  <option
+                    key={proto._id}
+                    value={proto._id}
+                    defaultValue={proto._id === protocol ? "selected" : ""}
+                  >
                     {proto.name}
                   </option>
                 ))

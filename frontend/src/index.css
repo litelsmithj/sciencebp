@@ -178,6 +178,22 @@ h3 {
   transform: scale(0.98);
 }
 
+.btn-delete {
+  display: inline;
+  margin-bottom: 10px;
+  background-color: crimson;
+  align-self: center;
+}
+
+.btn-delete > svg {
+  position: relative;
+  top: 2px;
+}
+
+.btn-create {
+  background-color: seagreen;
+}
+
 .loadingSpinnerContainer {
   position: fixed;
   top: 0;
@@ -202,6 +218,10 @@ h3 {
 
 .demo-tracker {
   font-style: italic;
+}
+
+textarea {
+  resize: vertical;
 }
 
 @keyframes spin {

@@ -41,6 +41,16 @@ export const createTracker = createAsyncThunk('tracker/create', async(trackerDat
     }
 });
 
+export const trackerExists = createAsyncThunk('tracker/exists', async(trackerData, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await trackerService.trackerExists(trackerData, token);
+    } catch (error) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
 export const updateTracker = createAsyncThunk('tracker/update', async(trackerData, thunkAPI) => {
     try {
         const token = thunkAPI.getState().auth.user.token;
@@ -120,6 +130,19 @@ export const trackerSlice = createSlice({
                 state.trackers = action.payload;
             })
             .addCase(updateTracker.rejected, (state, action) => {
+                state.trackersLoading = false;
+                state.trackersError = true;
+                state.trackersMessage = action.payload;
+            })
+            .addCase(trackerExists.pending, (state) => {
+                state.trackersLoading = true;
+            })
+            .addCase(trackerExists.fulfilled, (state) => {
+                state.trackersLoading = false;
+                state.trackersSuccess = true;
+                // No push to trackers for this slice
+            })
+            .addCase(trackerExists.rejected, (state, action) => {
                 state.trackersLoading = false;
                 state.trackersError = true;
                 state.trackersMessage = action.payload;

@@ -5,8 +5,6 @@ import ArticleItem from "../components/articles/ArticleItem";
 import Spinner from '../components/Spinner';
 import {getProtocols, resetProtocols} from '../features/protocols/protocolSlice';
 import {getArticles, resetArticles} from '../features/articles/articleSlice';
-import ProtocolForm from '../components/protocols/ProtocolForm';
-import ArticleForm from '../components/articles/ArticleForm';
 
 function Dashboard() {
   const dispatch = useDispatch();
@@ -47,14 +45,6 @@ function Dashboard() {
         <p>Protocols</p>
       </section>
 
-      {user ? (
-        <>
-          <ProtocolForm />
-        </>
-      ) : (
-        <></>
-      )}
-
       <section className="content">
         {protocols.length > 0 ? (
           <div className="protocols">
@@ -74,14 +64,6 @@ function Dashboard() {
       <section className="footer">
         <p>Articles</p>
       </section>
-
-      {user ? (
-        <>
-          <ArticleForm />
-        </>
-      ) : (
-        <></>
-      )}
 
       <section className="content">
         {articles.length > 0 ? (

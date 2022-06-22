@@ -35,26 +35,33 @@ function ArticleForm() {
           </div>
           <div className="form-group">
             <label htmlFor="body">Body</label>
-            <input
-              type="text"
+            <textarea
               id="body"
               name="body"
               value={body}
+              rows = "5"
+              placeholder='Share a science-based story related or unrelated to a specific protocol'
               onChange={(e) => setBody(e.target.value)}
             />
           </div>
           <div className="form-group">
             <label htmlFor="protocol">Choose a protocol:</label>
-              <select name="protocol" id = "protocol" onChange = {(e) => setProtocol(e.target.value)}>
-                <option value = {null}>None</option>
-                {protocols.length > 0 ? (
-                  protocols.map((proto)=> (
-                    <option key = {proto._id} value = {proto._id}>{proto.name}</option>
-                  ))
-                ) : (
-                <>
-                </>)}
-              </select>
+            <select
+              name="protocol"
+              id="protocol"
+              onChange={(e) => setProtocol(e.target.value)}
+            >
+              <option value={null}>None</option>
+              {protocols.length > 0 ? (
+                protocols.map((proto) => (
+                  <option key={proto._id} value={proto._id}>
+                    {proto.name}
+                  </option>
+                ))
+              ) : (
+                <></>
+              )}
+            </select>
           </div>
           <div className="form-group">
             <button className="btn btn-block" type="submit">

@@ -26,6 +26,25 @@ const getTrackerById = asyncHandler(async(req,res) => {
     res.status(200).json(tracker);
 });
 
+// @desc Check if tracker exists
+// @route GET /api/trackers/exists
+// @access private
+const trackerExists = asyncHandler(async(req,res) => {
+    if(!req.body) {
+        res.status(400);
+        throw new Error('Tracker data not submitted');
+    }
+    
+    var tracker = await Tracker.find({protocol: req.body.protocol, user: req.user.id}); 
+    
+    if (tracker.length > 0) {
+        return true;
+    } else {
+        return false;
+    }
+
+});
+
 // @desc Set tracker
 // @route POST /api/trackers
 // @access private
@@ -60,6 +79,39 @@ const setTracker = asyncHandler(async(req,res) => {
             days: [{'date': req.body.dateString, values: {'Mon': false, 'Tue': false, 'Wed': false, 'Thu': false, 'Fri': false, 'Sat': false, 'Sun': false}}]
         });
         res.status(200).json(newTracker);
+    }
+});
+
+// @desc Add new week for tracker
+// @route PUT /api/trackers
+// @access private
+const addTrackerWeek = asyncHandler(async(req,res) => {
+    if(!req.body) {
+        res.status(400);
+        throw new Error('Tracker not created');
+    }
+    
+    var tracker = await Tracker.find({protocol: req.body.protocol, user: req.user.id}); 
+    
+    if (tracker.length > 0) {
+        var trackerDays = tracker[0].days;
+        var trackerDay = trackerDays.find((day)=> day.date === req.body.dateString);
+
+        if (!trackerDay){
+            trackerDays.push({'date': req.body.dateString, values: {'Mon': false, 'Tue': false, 'Wed': false, 'Thu': false, 'Fri': false, 'Sat': false, 'Sun': false}})
+
+            const updatedTracker = await Tracker.findOneAndUpdate({protocol: req.body.protocol, user: req.user.id}, {days: trackerDays}, {
+                new: true
+            });
+
+            res.status(200).json(updatedTracker);
+        } else {
+            res.status(400);
+            throw new Error('Tracker week already present');
+        }
+    } else {
+        res.status(400);
+        throw new Error('Tracker not found');
     }
 });
 
@@ -109,5 +161,7 @@ module.exports = {
     getTrackers,
     getTrackerById,
     setTracker,
+    trackerExists,
+    addTrackerWeek,
     updateTracker,
 };

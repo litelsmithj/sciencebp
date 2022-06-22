@@ -16,7 +16,9 @@ import {
   createTracker,
   deleteTracker,
   updateTracker,
+  trackerExists,
 } from "../features/trackers/trackerSlice";
+import { FaTrash } from "react-icons/fa";
 
 function ProtocolDetail() {
   const { protocolId } = useParams();
@@ -67,10 +69,15 @@ function ProtocolDetail() {
       );
 
       if (user) {
-        dispatch(createTracker({ protocol: protocolId, dateString })); // create if doesn't exist
-        trackerAction.current = await dispatch(
-          getProtocolTrackerByUser(protocolId)
-        );
+        
+        if (await dispatch(trackerExists({ protocol: protocolId, dateString }))){
+          
+        } else {
+          await dispatch(createTracker({ protocol: protocolId, dateString })); // create if doesn't exist
+          trackerAction.current = await dispatch(
+            getProtocolTrackerByUser(protocolId)
+          );
+        }
       }
 
       count.current = trackerAction.current
@@ -137,8 +144,10 @@ function ProtocolDetail() {
     dispatch(getProtocolTrackerByUser(protocolId));
   };
 
+  var days;
+
   if (user){
-    var days = trackerAction.current.payload[0].days.find(day => day.date === dateString);
+    days = trackerAction.current.payload[0].days.find(day => day.date === dateString);
   }
 
   return (
@@ -157,24 +166,20 @@ function ProtocolDetail() {
             <br />
             {trackerAction.current ? (
               <>
-                <br/>
+                <br />
                 Week of {dateString}
-                <br/>
-                {Object.keys(days.values).map(
-                  (day) => (
-                    <div key={day} className = "tracker-day">
-                      <input
-                        type="checkbox"
-                        id={day}
-                        onClick={(e) => dayClick(e)}
-                        defaultChecked={
-                          days.values[day]
-                        }
-                      ></input>
-                      <label htmlFor={day}>{day}</label>
-                    </div>
-                  )
-                )}
+                <br />
+                {Object.keys(days.values).map((day) => (
+                  <div key={day} className="tracker-day">
+                    <input
+                      type="checkbox"
+                      id={day}
+                      onClick={(e) => dayClick(e)}
+                      defaultChecked={days.values[day]}
+                    ></input>
+                    <label htmlFor={day}>{day}</label>
+                  </div>
+                ))}
               </>
             ) : (
               <></>
@@ -186,8 +191,9 @@ function ProtocolDetail() {
               <ProtocolUpdateForm />
 
               <br />
-
-              <button onClick={() => deleteButtonClick()}>Delete</button>
+              <button className = "btn-delete btn" onClick={() => deleteButtonClick()}>
+                <FaTrash/> Delete
+              </button>
             </>
           ) : (
             <></>
