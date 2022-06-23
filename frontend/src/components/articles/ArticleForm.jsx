@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
+import {useNavigate} from 'react-router-dom';
 import {createArticle} from '../../features/articles/articleSlice';
 
 function ArticleForm() {
@@ -8,6 +9,7 @@ function ArticleForm() {
     const [protocol, setProtocol] = useState(null);
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const {protocols} = useSelector(state => state.protocols);
 
     const onSubmit = (e)=> {
@@ -18,6 +20,8 @@ function ArticleForm() {
         setTitle('');
         setBody('');
         setProtocol(null);
+
+        navigate('/');
     };
 
     return (

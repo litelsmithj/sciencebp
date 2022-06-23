@@ -51,6 +51,26 @@ export const trackerExists = createAsyncThunk('tracker/exists', async(trackerDat
     }
 });
 
+export const trackerWeekExists = createAsyncThunk('tracker/WeekExists', async(trackerData, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await trackerService.trackerWeekExists(trackerData, token);
+    } catch (error) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+export const addTrackerWeek = createAsyncThunk('tracker/addWeek', async(trackerData, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token;
+        return await trackerService.addTrackerWeek(trackerData, token);
+    } catch (error) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
 export const updateTracker = createAsyncThunk('tracker/update', async(trackerData, thunkAPI) => {
     try {
         const token = thunkAPI.getState().auth.user.token;
@@ -134,6 +154,19 @@ export const trackerSlice = createSlice({
                 state.trackersError = true;
                 state.trackersMessage = action.payload;
             })
+            .addCase(addTrackerWeek.pending, (state) => {
+                state.trackersLoading = true;
+            })
+            .addCase(addTrackerWeek.fulfilled, (state, action) => {
+                state.trackersLoading = false;
+                state.trackersSuccess = true;
+                state.trackers = action.payload;
+            })
+            .addCase(addTrackerWeek.rejected, (state, action) => {
+                state.trackersLoading = false;
+                state.trackersError = true;
+                state.trackersMessage = action.payload;
+            })
             .addCase(trackerExists.pending, (state) => {
                 state.trackersLoading = true;
             })
@@ -143,6 +176,19 @@ export const trackerSlice = createSlice({
                 // No push to trackers for this slice
             })
             .addCase(trackerExists.rejected, (state, action) => {
+                state.trackersLoading = false;
+                state.trackersError = true;
+                state.trackersMessage = action.payload;
+            })
+            .addCase(trackerWeekExists.pending, (state) => {
+                state.trackersLoading = true;
+            })
+            .addCase(trackerWeekExists.fulfilled, (state) => {
+                state.trackersLoading = false;
+                state.trackersSuccess = true;
+                // No push to trackers for this slice
+            })
+            .addCase(trackerWeekExists.rejected, (state, action) => {
                 state.trackersLoading = false;
                 state.trackersError = true;
                 state.trackersMessage = action.payload;

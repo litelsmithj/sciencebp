@@ -15,6 +15,18 @@ const createTracker = async(trackerData, token) => {
     return response.data;
 };
 
+const addTrackerWeek = async(trackerData, token) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+
+    const response = await axios.put(API_URL+'addWeek', trackerData, config);
+
+    return response.data;
+};
+
 const trackerExists = async(trackerData, token) => {
     const config = {
         headers: {
@@ -23,6 +35,19 @@ const trackerExists = async(trackerData, token) => {
     }
 
     const response = await axios.post(API_URL+'exists', trackerData, config);
+
+    // console.log(response.data);
+    return response.data;
+};
+
+const trackerWeekExists = async(trackerData, token) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+
+    const response = await axios.post(API_URL+'WeekExists', trackerData, config);
 
     return response.data;
 };
@@ -69,6 +94,8 @@ const trackerService = {
     getProtocolTrackerByUser,
     updateTracker,
     trackerExists,
+    trackerWeekExists,
+    addTrackerWeek,
 }
 
 export default trackerService;

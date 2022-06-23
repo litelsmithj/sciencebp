@@ -17,6 +17,7 @@ import {
   deleteTracker,
   updateTracker,
   trackerExists,
+  addTrackerWeek,
 } from "../features/trackers/trackerSlice";
 import { FaTrash } from "react-icons/fa";
 
@@ -36,11 +37,11 @@ function ProtocolDetail() {
   var dateString = month + '/' + monDayOfMonth;
 
   const { user } = useSelector((state) => state.auth);
-  const { protocols, protocolsLoading, protocolsError, protocolsMessage } =
+  const { protocols, protocolsError, protocolsMessage } =
     useSelector((state) => state.protocols);
-  const { articles, articlesLoading, articlesError, articlesMessage } =
+  const { articles, articlesError, articlesMessage } =
     useSelector((state) => state.articles);
-  const { trackersError, trackersMessage } = useSelector(
+  const { trackersError, trackersMessage, trackersLoading } = useSelector(
     (state) => state.trackers
   );
 
@@ -48,6 +49,7 @@ function ProtocolDetail() {
   var protocolAction = useRef();
   var articlesAction = useRef();
   var trackerAction = useRef();
+  var createTrackerAction = useRef();
   var count = useRef();
 
   useEffect(() => {
@@ -69,11 +71,27 @@ function ProtocolDetail() {
       );
 
       if (user) {
-        
-        if (await dispatch(trackerExists({ protocol: protocolId, dateString }))){
-          
+        var trackerExistsAction = await dispatch(
+          trackerExists({ protocol: protocolId })
+        );
+
+        var trackerWeekExistsAction = await dispatch(
+          trackerExists({ protocol: protocolId, dateString })
+        );
+
+        if (trackerExistsAction.payload) {
+          if (!trackerWeekExistsAction.payload) {
+            await dispatch(
+              addTrackerWeek({ protocol: protocolId, dateString })
+            );
+          }
         } else {
-          await dispatch(createTracker({ protocol: protocolId, dateString })); // create if doesn't exist
+          createTrackerAction.current = await dispatch(createTracker({ protocol: protocolId, dateString }));
+        }
+        if (
+          typeof createTrackerAction.current === "undefined" ||
+          createTrackerAction.current.meta.requestStatus === "fulfilled"
+        ) {
           trackerAction.current = await dispatch(
             getProtocolTrackerByUser(protocolId)
           );
@@ -90,11 +108,10 @@ function ProtocolDetail() {
         dispatch(resetTrackers());
       };
     };
-
     if (
-      !protocolAction.current &&
-      !articlesAction.current &&
-      (!user || !trackerAction.current)
+      !protocolAction.current ||
+      !articlesAction.current ||
+      (user && !trackerAction.current && !trackersLoading)
     ) {
       fetchData();
     }
@@ -107,15 +124,15 @@ function ProtocolDetail() {
     articlesMessage,
     trackersError,
     trackersMessage,
+    trackersLoading,
     user,
-    dateString
+    dateString,
   ]);
 
   const protocol = protocols;
   const { name, createdAt, description } = protocol;
 
-  // trackerAction.current included so that spinner is rendered initially while trackers are loading, not when updating
-  if (protocolsLoading || articlesLoading || (user && !trackerAction.current)) {
+  if (!protocolAction.current || !articlesAction.current || (user && !trackerAction.current)) {
     return <Spinner />;
   }
 

@@ -20,7 +20,7 @@ function App() {
             <Route path="/creator" element={<Creator/>}></Route>
             <Route path = "/login" element={<Login/>}></Route>
             <Route path = "/register" element={<Register/>}></Route>
-            <Route path = "/protocols/:protocolId" element = {<ProtocolDetail/>}></Route>
+            <Route exact path = "/protocols/:protocolId" element = {<ProtocolDetail/>}></Route>
             <Route path = "/articles/:articleId" element = {<ArticleDetail/>}></Route>
           </Routes>
         </div>

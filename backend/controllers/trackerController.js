@@ -27,9 +27,30 @@ const getTrackerById = asyncHandler(async(req,res) => {
 });
 
 // @desc Check if tracker exists
-// @route GET /api/trackers/exists
+// @route POST /api/trackers/exists
 // @access private
 const trackerExists = asyncHandler(async(req,res) => {
+    if(!req.body) {
+        res.status(400);
+        throw new Error('Tracker data not submitted');
+    }
+
+    // console.log('hello');
+    
+    var tracker = await Tracker.find({protocol: req.body.protocol, user: req.user.id}); 
+    
+    // console.log(tracker);
+    if (tracker.length > 0) {
+        res.status(200).json(true);
+    } else {
+        res.status(200).json(false);
+    }
+});
+
+// @desc Check if tracker week exists
+// @route POST /api/trackers/weekExists
+// @access private
+const trackerWeekExists = asyncHandler(async(req,res) => {
     if(!req.body) {
         res.status(400);
         throw new Error('Tracker data not submitted');
@@ -38,11 +59,18 @@ const trackerExists = asyncHandler(async(req,res) => {
     var tracker = await Tracker.find({protocol: req.body.protocol, user: req.user.id}); 
     
     if (tracker.length > 0) {
-        return true;
-    } else {
-        return false;
-    }
+        var trackerDays = tracker[0].days;
+        var trackerDay = trackerDays.find((day)=> day.date === req.body.dateString);
 
+        if (trackerDay){
+            res.status(200).json(true);
+        } else {
+            res.status(200).json(false);
+        }
+    } else {
+        res.status(400);
+        throw new Error('Tracker not found');
+    }
 });
 
 // @desc Set tracker
@@ -83,7 +111,7 @@ const setTracker = asyncHandler(async(req,res) => {
 });
 
 // @desc Add new week for tracker
-// @route PUT /api/trackers
+// @route PUT /api/trackers/addWeek
 // @access private
 const addTrackerWeek = asyncHandler(async(req,res) => {
     if(!req.body) {
@@ -162,6 +190,7 @@ module.exports = {
     getTrackerById,
     setTracker,
     trackerExists,
+    trackerWeekExists,
     addTrackerWeek,
     updateTracker,
 };

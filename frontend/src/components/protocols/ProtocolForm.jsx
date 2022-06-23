@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
+import {useNavigate} from 'react-router-dom';
 import {createProtocol} from '../../features/protocols/protocolSlice';
 
 function ProtocolForm() {
@@ -7,6 +8,7 @@ function ProtocolForm() {
     const [description, setDescription] = useState("");
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const { protocolsError, protocolsMessage } = useSelector(state=> state.protocols);
 
@@ -21,6 +23,8 @@ function ProtocolForm() {
 
         setName('');
         setDescription('');
+
+        navigate('/');
     };
 
     return (
