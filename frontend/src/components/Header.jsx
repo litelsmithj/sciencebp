@@ -17,7 +17,12 @@ function Header() {
     return (
       <header className="header">
         <div className="logo">
-          <Link to="/">SBP</Link>
+          {/* <Link to="/">SBP</Link> */}
+          <Link to="/">
+            <img className = 'logo' src={require('../SBP_logo_alt.png')}/>
+            <img className='logo' src = {require('../SBP_text.png')}/>
+          </Link>
+          {/* <img className='logo' src = {require('../SBP_text.png')}/> */}
         </div>
         {user ? (
           <>

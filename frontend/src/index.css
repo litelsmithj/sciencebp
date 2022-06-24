@@ -43,6 +43,10 @@ h3 {
   text-align: center;
 }
 
+.logo {
+  max-height: 50px;
+}
+
 .header {
   display: flex;
   justify-content: space-between;
