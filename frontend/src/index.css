@@ -47,6 +47,13 @@ h3 {
   max-height: 50px;
 }
 
+.logo > * {
+  display: flex;
+  align-items: center;
+  font-size: 40px;
+  font-weight: 600;
+}
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -86,8 +93,12 @@ h3 {
   padding: 0 20px;
 }
 
+.heading h1 {
+  color: rgb(2, 33, 121);
+}
+
 .heading p ,.footer p {
-  color: #828282;
+  color: rgb(110, 150, 235);
 }
 
 .protocols, .articles {
