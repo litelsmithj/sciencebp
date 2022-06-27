@@ -57,11 +57,12 @@ const trackerWeekExists = asyncHandler(async(req,res) => {
     }
     
     var tracker = await Tracker.find({protocol: req.body.protocol, user: req.user.id}); 
-    
+    // console.log(req.body.dateString)
+
     if (tracker.length > 0) {
         var trackerDays = tracker[0].days;
         var trackerDay = trackerDays.find((day)=> day.date === req.body.dateString);
-
+        
         if (trackerDay){
             res.status(200).json(true);
         } else {
@@ -84,20 +85,21 @@ const setTracker = asyncHandler(async(req,res) => {
     
     var tracker = await Tracker.find({protocol: req.body.protocol, user: req.user.id}); 
     
-    // Maybe add if exists function instead of including in the POST req
     if (tracker.length > 0) {
-        var trackerDays = tracker[0].days;
-        var trackerDay = trackerDays.find((day)=> day.date === req.body.dateString);
+        // var trackerDays = tracker[0].days;
+        // var trackerDay = trackerDays.find((day)=> day.date === req.body.dateString);
 
-        if (!trackerDay){
-            trackerDays.push({'date': req.body.dateString, values: {'Mon': false, 'Tue': false, 'Wed': false, 'Thu': false, 'Fri': false, 'Sat': false, 'Sun': false}})
+        // if (!trackerDay){
+        //     trackerDays.push({'date': req.body.dateString, values: {'Mon': false, 'Tue': false, 'Wed': false, 'Thu': false, 'Fri': false, 'Sat': false, 'Sun': false}})
 
-            const updatedTracker = await Tracker.findOneAndUpdate({protocol: req.body.protocol, user: req.user.id}, {days: trackerDays}, {
-                new: true
-            });
+        //     const updatedTracker = await Tracker.findOneAndUpdate({protocol: req.body.protocol, user: req.user.id}, {days: trackerDays}, {
+        //         new: true
+        //     });
 
-            res.status(200).json(updatedTracker);
-        }
+        //     res.status(200).json(updatedTracker);
+        // }
+        res.status(400);
+        throw new Error('Tracker already exists');
         
     } else {
         const newTracker = await Tracker.create({
@@ -120,11 +122,11 @@ const addTrackerWeek = asyncHandler(async(req,res) => {
     }
     
     var tracker = await Tracker.find({protocol: req.body.protocol, user: req.user.id}); 
-    
+
     if (tracker.length > 0) {
         var trackerDays = tracker[0].days;
         var trackerDay = trackerDays.find((day)=> day.date === req.body.dateString);
-
+        
         if (!trackerDay){
             trackerDays.push({'date': req.body.dateString, values: {'Mon': false, 'Tue': false, 'Wed': false, 'Thu': false, 'Fri': false, 'Sat': false, 'Sun': false}})
 

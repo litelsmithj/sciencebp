@@ -17,6 +17,7 @@ import {
   deleteTracker,
   updateTracker,
   trackerExists,
+  trackerWeekExists,
   addTrackerWeek,
 } from "../features/trackers/trackerSlice";
 import { FaTrash } from "react-icons/fa";
@@ -76,7 +77,7 @@ function ProtocolDetail() {
         );
 
         var trackerWeekExistsAction = await dispatch(
-          trackerExists({ protocol: protocolId, dateString })
+          trackerWeekExists({ protocol: protocolId, dateString })
         );
 
         if (trackerExistsAction.payload) {
@@ -186,17 +187,21 @@ function ProtocolDetail() {
                 <br />
                 Week of {dateString}
                 <br />
-                {Object.keys(days.values).map((day) => (
-                  <div key={day} className="tracker-day">
-                    <input
-                      type="checkbox"
-                      id={day}
-                      onClick={(e) => dayClick(e)}
-                      defaultChecked={days.values[day]}
-                    ></input>
-                    <label htmlFor={day}>{day}</label>
-                  </div>
-                ))}
+                { days ? (
+                  <>
+                    {Object.keys(days.values).map((day) => (
+                      <div key={day} className="tracker-day">
+                        <input
+                          type="checkbox"
+                          id={day}
+                          onClick={(e) => dayClick(e)}
+                          defaultChecked={days.values[day]}
+                        ></input>
+                        <label htmlFor={day}>{day}</label>
+                      </div>
+                    ))}
+                  </>
+                ): (<></>)}
               </>
             ) : (
               <></>

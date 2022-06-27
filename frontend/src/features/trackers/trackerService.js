@@ -21,9 +21,8 @@ const addTrackerWeek = async(trackerData, token) => {
             Authorization: `Bearer ${token}`
         }
     }
-
     const response = await axios.put(API_URL+'addWeek', trackerData, config);
-
+    
     return response.data;
 };
 
@@ -36,7 +35,6 @@ const trackerExists = async(trackerData, token) => {
 
     const response = await axios.post(API_URL+'exists', trackerData, config);
 
-    // console.log(response.data);
     return response.data;
 };
 
@@ -46,8 +44,8 @@ const trackerWeekExists = async(trackerData, token) => {
             Authorization: `Bearer ${token}`
         }
     }
-
-    const response = await axios.post(API_URL+'WeekExists', trackerData, config);
+    
+    const response = await axios.post(API_URL+'weekExists', trackerData, config);
 
     return response.data;
 };
