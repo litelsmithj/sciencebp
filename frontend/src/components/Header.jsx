@@ -18,7 +18,7 @@ function Header() {
       <header className="header">
         <div className="logo">
           <Link to="/">
-            <img className = 'logo' src={require('../SBP_logo_alt.png')}/>
+            <img className = 'logo' src={require('../SBP_logo_alt-removebg.png')}/>
             SBP
           </Link>
         </div>
